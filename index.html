@@ -54,7 +54,7 @@ body{height:auto;display:block;overflow:auto;max-width:1400px}
 
 .bar{display:flex;gap:10px;align-items:center}.bar h1{flex:1}.bar #st{flex:none;text-align:right;min-width:0;max-width:60vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .big div{cursor:help}details.card summary{cursor:pointer;font-weight:600}
-.wins{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:8px;margin:8px 0;font-size:13px}.wins>div{background:var(--bg);border-radius:8px;padding:6px 10px}
+.wins[hidden]{display:none}.wins{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:8px;margin:8px 0;font-size:13px}.wins>div{background:var(--bg);border-radius:8px;padding:6px 10px}
 .tiles{display:flex;flex-wrap:nowrap;gap:5px;overflow-x:auto}.t{flex:1 1 0;min-width:80px;padding:3px 6px}.t .k{font-size:10px}.t .v{font-size:12px;line-height:1.25}
 .frm label{display:flex;flex-direction:column;font-size:11px;color:var(--mu);gap:2px}.frm input,.frm select,.frm textarea{font:inherit;font-size:13px;padding:5px 7px;border-radius:7px;border:1px solid var(--bd);background:var(--bg);color:var(--tx)}
 .fr{display:flex;flex-wrap:wrap;gap:8px;align-items:flex-end;margin:6px 0}.frm .wide{width:100%}.frm textarea{width:100%;resize:vertical}
@@ -67,7 +67,7 @@ button.sec,label.btn.sec{background:var(--card);color:var(--tx);border:1px solid
 @media(hover:none){.nv{display:flex}#det svg{touch-action:pan-y}}
 @media(max-width:600px){
 body{padding:8px}
-.bar{grid-template-columns:1fr auto;grid-template-areas:"h b" "s s";row-gap:2px}.bar h1{grid-area:h;font-size:17px;white-space:nowrap}.bar button{grid-area:b;padding:8px 12px}.bar #st{grid-area:s;text-align:left;max-width:none;font-size:11px}
+.bar{grid-template-columns:1fr;grid-template-areas:"h" "s";row-gap:2px}.bar h1{grid-area:h;font-size:17px;white-space:nowrap}.bar button{grid-area:b;padding:8px 12px}.bar #st{grid-area:s;text-align:left;max-width:none;font-size:11px}
 .tiles{display:grid!important;grid-template-columns:repeat(3,1fr);overflow:visible}.t{min-width:0}.t .v{font-size:12px;word-break:break-word}
 .wins{grid-template-columns:1fr}
 .frm input,.frm select,.frm textarea{font-size:16px;padding:8px}
@@ -76,7 +76,7 @@ button,label.btn{min-height:36px}
 .card{padding:8px}
 }
 </style></head><body>
-<div class="bar"><h1>🎣 Pesca: Venezia</h1><span id="st">Caricamento…</span><button id="go">Aggiorna</button></div>
+<div class="bar"><h1>🎣 Pesca: Venezia</h1><span id="st">Caricamento…</span></div>
 <div class="days" id="days"></div>
 <div id="det"></div>
 <details class="card" id="arch"><summary>Archivio annotazioni e condizioni meteo</summary><div id="archBody"></div></details>
@@ -204,8 +204,8 @@ const sum=(a,x,y)=>sl(a,x,y).reduce((p,c)=>p+c,0);
 const mean=(a,x,y)=>{const s=sl(a,x,y);return s.length?sum(a,x,y)/s.length:0};
 const mx=(a,x,y)=>Math.max(0,...sl(a,x,y));
 const col=v=>v>=70?"var(--g)":v>=45?"var(--a)":"var(--r)";
-async function load(){
-  const k=SP.ve;$("st").textContent="Caricamento dati…";
+async function load(auto){
+  const prevT0=S&&S.t0,prevSel=sel,k=SP.ve;if(!auto||!S)$("st").textContent="Caricamento dati…";
   const w=`https://api.open-meteo.com/v1/forecast?latitude=${k.lat}&longitude=${k.lon}&hourly=temperature_2m,precipitation,pressure_msl,wind_speed_10m,wind_direction_10m,wind_gusts_10m&daily=sunrise,sunset&past_days=${PAST}&forecast_days=${FUT}&timezone=Europe%2FRome&wind_speed_unit=kn`;
   const m=`https://marine-api.open-meteo.com/v1/marine?latitude=${k.mlat}&longitude=${k.mlon}&hourly=wave_height,sea_surface_temperature&past_days=${PAST}&forecast_days=${FUT}&timezone=Europe%2FRome`;
   try{
@@ -215,8 +215,8 @@ async function load(){
     mergeIcon(W,I);mergeMetar(W,R);
     const MM=pickMarine(M);S=compute(W,MM.h,k);S.sstNote=MM.note;refreshArchive();
     $("st").textContent="Aggiornato "+new Date().toLocaleString("it-IT",{dateStyle:"short",timeStyle:"short"})+(S.tide?"":" – livello marino non disponibile")+waterTxt();
-    sel=PAST;render();
-  }catch(e){$("st").textContent="Errore: "+e.message+" (serve connessione; apri il file nel browser)."}
+    sel=(auto&&prevT0===S.t0)?prevSel:PAST;render();
+  }catch(e){$("st").textContent=(auto&&S?"Aggiornamento non riuscito, riprovo tra poco · ":"")+"Errore: "+e.message+" (serve connessione; apri il file nel browser)."}
 }
 function waterTxt(){const i=Math.round((Date.now()-S.t0)/36e5),v=(S.sst&&S.sst[i]!=null)?S.sst[i]:(S.days[PAST]&&S.days[PAST].sst);
   return" · Acqua "+(v==null?"n/d":v.toFixed(1).replace(".",",")+" °C"+(S.sstKind=="stima"?" (stima)":""))}
@@ -395,7 +395,7 @@ function detail(x){
   $("det").innerHTML=`<div class="card"><div id="tip" class="tip"></div>${chart(x)}</div><div class="nv"><button class="sec" onclick="goDay(-1)" aria-label="Giorno precedente">◀</button><button class="sec" onclick="annota()">＋ Annota</button><button class="sec" onclick="goDay(1)" aria-label="Giorno successivo">▶</button></div><div id="frm"></div><div class="card">
   <b>${x.date.toLocaleDateString("it-IT",{weekday:"long",day:"numeric",month:"long"})}</b>
   <div class="big"><div style="background:${col(x.apnea)}" title="${tA}"><span class="n">${x.apnea}</span> 🤿 Pesca in apnea</div><div style="background:${col(x.canna)}" title="${tF}"><span class="n">${x.canna}</span> 🎣 Pesca</div><div style="background:${col(x.clarity)}" title="${tC}"><span class="n">${x.clarity}</span> 💧 Trasparenza dell’acqua</div></div>
-  <div class="wins"><div><b>🤿 Momenti migliori Pesca in apnea</b><br>${wl(x.win.S)}</div><div><b>🎣 Momenti migliori Pesca</b><br>${wl(x.win.F)}</div></div>
+  <div class="wins" hidden><div><b>🤿 Momenti migliori Pesca in apnea</b><br>${wl(x.win.S)}</div><div><b>🎣 Momenti migliori Pesca</b><br>${wl(x.win.F)}</div></div>
   <div class="tiles">${T(S.sstKind=="stima"?"Temp. acqua (stima)":"Temp. acqua (mare)",x.sst==null?"n/d":x.sst.toFixed(1).replace(".",",")+" °C"+(x.sstTr!=null&&Math.abs(x.sstTr)>=.1?" "+(x.sstTr>0?"↗ +":"↘ ")+x.sstTr.toFixed(1).replace(".",","):""))}${T("Vento medio",x.avgW.toFixed(0)+" kn")}${T("Provenienza",dirN(x.dir))}${T("Pressione",x.pm.toFixed(0)+" hPa "+(Math.abs(x.trend)<1?"→":x.trend>0?"↗":"↘")+" "+(x.trend>0?"+":"")+x.trend.toFixed(0)+"/24h")}${T("Spinta marea (stima)",(x.surge>0?"+":"")+x.surge+" cm")}${T("Raffica max",x.maxG.toFixed(0)+" kn")}${x.modW!=null?T("Misurato / modello",x.meaW.toFixed(0)+" / "+x.modW.toFixed(0)+" kn"):""}${T("Pioggia giorno",x.rainDay.toFixed(1)+" mm")}${T("Pioggia 60h",x.rainPrev.toFixed(1)+" mm")}${T("Onda",x.wave==null?"n/d":x.wave.toFixed(1)+" m")}${T("Escursione marea",S.tide?x.range.toFixed(2)+" m":"n/d")}${c.rate!=null?T("Corrente marea",c.rate.toFixed(1)+" cm/h · "+(c.rate<3?"quasi ferma":c.rate<6?"debole":c.rate<=14?"buona":c.rate<24?"forte":"troppo forte")):""}${T("Luna",mp)}</div>
 ${annH}</div>${how}`;
   renderForm();renderArchive();
@@ -449,7 +449,11 @@ function chart(x){
   o+=`<line id="cur" y1="${cT}" y2="${bot}" stroke="var(--tx)" stroke-width="1" opacity=".35" style="display:none" pointer-events="none"/><circle id="hd" r="4.5" fill="none" stroke="var(--tx)" stroke-width="2" style="display:none" pointer-events="none"/><text id="curT" y="${Ht-4}" text-anchor="middle" style="display:none;fill:var(--ac);font-weight:700;font-size:11px;stroke:var(--card);stroke-width:3px;paint-order:stroke" pointer-events="none"></text></svg><div class="leg"><span style="color:var(--ac)">● marea</span> · ${S.cut>=0?`<span style="color:#6b7c85">● vento misurato</span> · <span style="color:var(--wind)">● vento previsto</span>`:`<span style="color:var(--wind)">● vento previsto</span>`} · <span style="color:#4a8fe7">▮ pioggia</span> · <span style="color:#9b59b6">- - pressione</span> · <span style="color:#1e40af">— acqua</span> · <span style="color:var(--g)">➤ nodi e direzione verso cui soffia</span> · <span style="color:#e8b400">● sole</span> · <span style="color:#8a8fa8">● luna</span>${S.cmpTxt?"<br>"+S.cmpTxt:""}</div>`;
   return o}
 window.addEventListener("resize",()=>{if(S)detail(S.days[sel])});
-$("go").onclick=load;load();
+load();
+let LASTLOAD=Date.now();const _ld=load;
+function autoRefresh(){if(FORM||document.hidden)return;LASTLOAD=Date.now();_ld(true)}
+setInterval(()=>{if(Date.now()-LASTLOAD>=15*60e3)autoRefresh()},60e3);
+document.addEventListener("visibilitychange",()=>{if(!document.hidden&&Date.now()-LASTLOAD>=15*60e3)autoRefresh()});
 (function(){try{const c=document.createElement("canvas");c.width=c.height=64;const g=c.getContext("2d");g.font="50px 'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',sans-serif";g.textAlign="center";g.textBaseline="middle";g.fillText("🎣",32,36);
   const l=document.querySelector('link[rel~="icon"]');if(l){l.type="image/png";l.href=c.toDataURL("image/png")}}catch(e){}})();
 </script></body></html>
