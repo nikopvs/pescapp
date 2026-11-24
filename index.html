@@ -12,7 +12,7 @@
 <link rel="icon" type="image/png" href="icon-192.png" data-keep="1">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/suncalc/1.9.0/suncalc.min.js"></script>
 <style>
-:root{--bg:#f4f7f9;--card:#fff;--wind:#6b7c85;--tx:#14262e;--mu:#5d7480;--bd:#d6e0e5;--ac:#0b7a9e;--g:#1f9d55;--a:#d99a00;--r:#d64545}
+:root{--bg:#f4f7f9;--card:#fff;--wind:#000;--tx:#14262e;--mu:#5d7480;--bd:#d6e0e5;--ac:#0b7a9e;--g:#1f9d55;--a:#d99a00;--r:#d64545}
 @media(prefers-color-scheme:dark){:root{--bg:#0e1a20;--card:#162830;--wind:#ffffff;--tx:#e6f0f4;--mu:#8aa3af;--bd:#27414c;--ac:#4cc3e6;--g:#3ccf7b;--a:#f0b429;--r:#f06a6a}}
 *{box-sizing:border-box}body{margin:0;font:15px/1.45 system-ui,sans-serif;background:var(--bg);color:var(--tx);padding:12px;max-width:900px;margin:auto}
 h1{font-size:20px;margin:4px 0 10px}
@@ -63,8 +63,8 @@ button.sec,label.btn.sec{background:var(--card);color:var(--tx);border:1px solid
 #arch .ar{font-size:12px;padding:6px 0;border-top:1px solid var(--bd)}#arch summary{cursor:pointer;font-weight:600}
 .card{position:relative}.tip{position:absolute;display:none;pointer-events:none;background:var(--card);color:var(--tx);border:1px solid var(--bd);border-radius:6px;padding:3px 8px;font-size:12px;z-index:5;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.25)}
 .mm{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;z-index:50;align-items:center;justify-content:center}.mm.on{display:flex}.mb{background:var(--card);border-radius:12px;padding:10px;width:min(900px,96vw)}#mapc{height:min(60vh,520px);border-radius:8px;margin:6px 0}.mh{font-size:13px}.pin{font-size:24px;line-height:24px;background:none;border:0}.pos{font-size:13px;color:var(--tx);padding:5px 0}
-.ab{display:none;position:absolute;top:4px;right:4px;width:30px;height:30px;min-height:0;padding:0;border-radius:50%;border:1px solid var(--bd);background:var(--card);color:var(--ac);font-size:20px;line-height:1;opacity:.85;z-index:4}
-@media(hover:none){.ab{display:block}#det svg{touch-action:pan-y}}
+.ab{display:none;position:absolute;width:28px;height:28px;min-height:0;padding:0;border-radius:7px;background:rgba(127,140,150,.18);border:1px solid rgba(100,115,125,.75);color:var(--tx);z-index:4;align-items:center;justify-content:center}
+@media(hover:none){.ab{display:flex}#det svg{touch-action:pan-y}}
 @media(max-width:600px){
 body{padding:8px}
 .bar{grid-template-columns:1fr;grid-template-areas:"h" "s";row-gap:2px}.bar h1{grid-area:h;font-size:17px;white-space:nowrap}.bar button{grid-area:b;padding:8px 12px}.bar #st{grid-area:s;text-align:left;max-width:none;font-size:11px}
@@ -366,7 +366,7 @@ function detail(x){
   const T=(k,v)=>`<div class="t"><div class="k">${k}</div><div class="v">${v}</div></div>`;
   const c=x.cmp,f=v=>Math.round(v),NL="&#10;";
   const day=dkey(x.date),es=ENT.filter(q=>q.t.slice(0,10)==day);
-  const annH=es.length?`<div class="ann">${es.map(q=>`<div>${ico(q)} <b>${q.t.slice(11)}</b> ${[q.specie,q.qta,q.prof?"prof. "+q.prof+" m":"",q.luogo].filter(Boolean).map(esc).join(" · ")}${posL(q)}${q.testo?" — "+esc(q.testo):""} <a href="#" onclick="editEntry('${q.id}');return false">modifica</a> · <a href="#" onclick="delEntry('${q.id}');return false">elimina</a></div>`).join("")}</div>`:`<div class="hint">${TOUCH?'Tocca ＋ Annota':'Clicca sul grafico'} per aggiungere una cattura o una nota: il meteo del giorno viene salvato nell’archivio.</div>`;
+  const annH=es.length?`<div class="ann">${es.map(q=>`<div>${ico(q)} <b>${q.t.slice(11)}</b> ${[q.specie,q.qta,q.prof?"prof. "+q.prof+" m":"",q.luogo].filter(Boolean).map(esc).join(" · ")}${posL(q)}${q.testo?" — "+esc(q.testo):""} <a href="#" onclick="editEntry('${q.id}');return false">modifica</a> · <a href="#" onclick="delEntry('${q.id}');return false">elimina</a></div>`).join("")}</div>`:`<div class="hint">${TOUCH?'Tocca la matita sul grafico':'Clicca sul grafico'} per aggiungere una cattura o una nota.</div>`;
   const wl=a=>a.length?a.map(w=>`<b>${hm(w.from)}–${hm(w.to)}</b> (${w.peak})${w.why?" · "+w.why:""}`).join("<br>"):"nessuna finestra particolarmente favorevole";
   const tC=`Trasparenza dell’acqua = 100 − vento 48h (${f(c.pw)}) − pioggia 60h (${f(c.pr)}) − marea (${f(c.pt)}), minimo 5${NL}Vento medio 48h: ${c.wPrev.toFixed(0)} kn · pioggia 60h: ${c.rainPrev.toFixed(1)} mm${c.range!=null?" · escursione marea: "+c.range.toFixed(2)+" m":""}`;
   const tA=`Pesca in apnea = (45% Trasparenza dell’acqua + 35% calma di vento + 20% assenza di pioggia + bonus marea − penalità pressione) × fattore marea${NL}(0,45×${f(x.clarity)} + 0,35×${f(c.wA)} + 0,20×${f(c.rs)} + ${c.bonus} − ${f(c.pPen)}) = ${f(c.baseA)}, × ${c.multS.toFixed(2)} (corrente ${c.rate==null?"n/d":c.rate.toFixed(1)+" cm/h"}) = ${x.apnea}`;
@@ -393,7 +393,7 @@ function detail(x){
   · Pesca in apnea: vicino ai picchi di marea (acqua ferma, entro circa 45 minuti) e ad alba e tramonto (entro circa 60 minuti), solo con la luce; il massimo si ha quando coincidono.<br>
   · Pesca: da subito dopo un picco di marea fino a 2 ore dopo, più alba e tramonto; bonus se in quel momento c’è anche il sorgere o il calare della luna.<br><br>
   I valori sono arrotondati, per questo i conti possono differire di un punto.</div></details>`;
-  $("det").innerHTML=`<div class="card"><div id="tip" class="tip"></div>${chart(x)}<button class="ab" onclick="annota()" aria-label="Aggiungi cattura o nota" title="Aggiungi cattura o nota">＋</button></div><div id="frm"></div><div class="card">
+  $("det").innerHTML=`<div class="card"><div id="tip" class="tip"></div>${chart(x)}<button class="ab" style="top:${8+CH.bot-37}px;left:${8+CH.L}px" onclick="annota()" aria-label="Aggiungi cattura o nota" title="Aggiungi cattura o nota"><svg viewBox="0.1 0.1 19.9 18.8" width="16.8" height="16" aria-hidden="true"><path fill="var(--tx)" d="M3 17.25V21h3.75L17.8 9.94l-3.75-3.75L3 17.25zM20.7 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" transform="translate(2.5 1.5) scale(.82)"/><path d="M5 1.5v7M1.5 5h7" stroke="var(--tx)" stroke-width="2.4" stroke-linecap="round" fill="none"/></svg></button></div><div id="frm"></div><div class="card">
   <b>${x.date.toLocaleDateString("it-IT",{weekday:"long",day:"numeric",month:"long"})}</b>
   <div class="big"><div style="background:${col(x.apnea)}" title="${tA}"><span class="n">${x.apnea}</span> 🤿 Pesca in apnea</div><div style="background:${col(x.canna)}" title="${tF}"><span class="n">${x.canna}</span> 🎣 Pesca</div><div style="background:${col(x.clarity)}" title="${tC}"><span class="n">${x.clarity}</span> 💧 Trasparenza dell’acqua</div></div>
   <div class="wins" hidden><div><b>🤿 Momenti migliori Pesca in apnea</b><br>${wl(x.win.S)}</div><div><b>🎣 Momenti migliori Pesca</b><br>${wl(x.win.F)}</div></div>
@@ -415,17 +415,25 @@ function chart(x){
   Object.assign(CH,{X,Ya,top,bot,cT,cB,hz,Ht});CH.alt=hasC?((m,hh)=>pos(m?SunCalc.getMoonPosition:SunCalc.getPosition,hh)):null;let Ysf=null;
   const moonDot=(x,y,ph)=>{const r=6,m=ph>.5?1-ph:ph,k=Math.cos(2*Math.PI*m);return `<g transform="translate(${x},${y}) scale(${ph>.5?-1:1},1)"><circle r="${r}" fill="#111" stroke="#8a8fa8"/><path d="M0,${-r}A${r},${r} 0 0 1 0,${r}A${(Math.abs(k)*r).toFixed(2)},${r} 0 0 ${k>0?0:1} 0,${-r}Z" fill="#fff"/></g>`};
   if(hasC){
-    for(let h=h0;h<h1;h+=.5)if(pos(SunCalc.getPosition,h)<0)o+=`<rect x="${X(h)}" y="${cT}" width="${(R-L)/(h1-h0)/2+.5}" height="${bot-cT}" fill="#5b6b8c" opacity=".16"/>`;
-    o+=`<line x1="${L}" x2="${R}" y1="${hz}" y2="${hz}" stroke="var(--tx)" stroke-width="1.6" opacity=".6"/>`;
+    // cielo: colori in base all'altezza del sole
+    const KF=[[-14,[6,10,26]],[-8,[16,22,58]],[-3,[92,52,96]],[0,[222,94,52]],[3,[246,150,70]],[8,[250,196,120]],[16,[120,190,236]],[35,[74,164,232]]];
+    const skyC=a=>{if(a<=KF[0][0])return KF[0][1];for(let i=1;i<KF.length;i++)if(a<=KF[i][0]){const [a0,c0]=KF[i-1],[a1,c1]=KF[i],t=(a-a0)/(a1-a0);return c0.map((v,k)=>Math.round(v+(c1[k]-v)*t))}return KF[KF.length-1][1]};
+    let st="";for(let h=h0;h<=h1+1e-6;h+=.25){const c=skyC(pos(SunCalc.getPosition,h));st+=`<stop offset="${((h-h0)/(h1-h0)).toFixed(4)}" stop-color="rgb(${c})"/>`}
+    o+=`<defs><linearGradient id="skyg" gradientUnits="userSpaceOnUse" x1="${L}" x2="${R}" y1="0" y2="0">${st}</linearGradient></defs><rect x="${L}" y="${cT}" width="${R-L}" height="${hz-cT}" fill="url(#skyg)"/>`;
+    for(let k=0;k*.2+h0<h1;k++){const h=h0+k*.2,al=pos(SunCalc.getPosition,h);if(al>-6)continue;const r1=Math.abs(Math.sin(k*12.9898)*43758.5453)%1,r2=Math.abs(Math.sin(k*78.233)*12345.6789)%1;if(r1>.6)continue;
+      o+=`<circle cx="${X(h).toFixed(1)}" cy="${(cT+4+r2*(hz-cT-16)).toFixed(1)}" r="${(.6+r1*.9).toFixed(1)}" fill="#fff" opacity="${(Math.min(1,(-al-6)/6)*.9).toFixed(2)}"/>`}
+    // sotto l'orizzonte: fascia notte
+    for(let h=h0;h<h1;h+=.5)if(pos(SunCalc.getPosition,h)<0)o+=`<rect x="${X(h)}" y="${hz}" width="${(R-L)/(h1-h0)/2+.5}" height="${bot-hz}" fill="#5b6b8c" opacity=".16"/>`;
+    {let d=`M${L},${hz}`;for(let q=L;q+12<=R;q+=12)d+=`q3,-3.5 6,0t6,0`;o+=`<path d="${d}" fill="none" stroke="var(--ac)" stroke-width="1" opacity=".9"/>`}
     const seg=(f,c)=>{let cur=[],r="";const fl=()=>{if(cur.length>1)r+=`<polyline fill="none" stroke="${c}" stroke-width="2" points="${cur.join(" ")}"/>`;cur=[]};
       for(let h=h0;h<=h1;h+=.5){const a=pos(f,h);if(a>0)cur.push(X(h).toFixed(1)+","+Ya(a).toFixed(1));else fl()}fl();return r};
-    o+=seg(SunCalc.getPosition,"#e8b400")+seg(SunCalc.getMoonPosition,"#8a8fa8");
+    o+=seg(SunCalc.getPosition,"#ffd84a")+seg(SunCalc.getMoonPosition,"#d5dbee");
   }
-  {const xa=X(x.a),xb=X(Math.min(x.a+24,h1));o+=`<rect x="${xa}" y="${cT}" width="${xb-xa}" height="${bot-cT}" fill="var(--ac)" opacity=".12"/><line x1="${xa}" x2="${xa}" y1="${cT}" y2="${bot}" stroke="var(--ac)" stroke-width="2"/><line x1="${xb}" x2="${xb}" y1="${cT}" y2="${bot}" stroke="var(--ac)" stroke-width="2"/>`}
+  {const xa=X(x.a),xb=X(Math.min(x.a+24,h1)),y0=hasC?hz:cT;o+=`<rect x="${xa}" y="${y0}" width="${xb-xa}" height="${bot-y0}" fill="var(--ac)" opacity=".12"/><line x1="${xa}" x2="${xa}" y1="${y0}" y2="${bot}" stroke="var(--ac)" stroke-width="2"/><line x1="${xb}" x2="${xb}" y1="${y0}" y2="${bot}" stroke="var(--ac)" stroke-width="2"/>`}
   for(let h=h0;h<h1;h++)if(S.t[h].getHours()==0)o+=`<line x1="${X(h)}" x2="${X(h)}" y1="${top-4}" y2="${bot}" stroke="var(--bd)"/><text x="${X(h)+3}" y="${Ht-4}"${h==x.a?' style="fill:var(--ac);font-weight:700"':""}>${S.t[h].toLocaleDateString("it-IT",{weekday:"short",day:"numeric"})}</text>`;
   for(let h=h0;h<h1;h++){const p=S.pr[h]||0;if(p>0)o+=`<rect x="${X(h)}" y="${bot-Math.min(p,5)*12}" width="${(R-L)/(h1-h0)}" height="${Math.min(p,5)*12}" fill="#4a8fe7" opacity=".5"/>`}
   const ws=S.ws.slice(h0,h1).map(v=>v||0),wm=Math.max(20,...ws),Yw=v=>bot-(v/wm)*(bot-top);CH.Yw=Yw;
-  const mod=S.mws||S.ws,cut=S.cut==null?-1:S.cut,gs=`stroke="var(--wind)" stroke-width="1" opacity=".9"`;
+  const mod=S.mws||S.ws,cut=S.cut==null?-1:S.cut,gs=`stroke="var(--wind)" stroke-width="1.6" stroke-linecap="round" stroke-dasharray="0.1 4" opacity=".95"`;
   const pl=(f,t,v,st)=>{const p=[];for(let q=Math.max(f,h0);q<=Math.min(t,h1-1);q++)if(v(q)!=null)p.push(X(q)+","+Yw(v(q)));return p.length>1?`<polyline fill="none" ${st} points="${p.join(" ")}"/>`:""};
   o+=pl(Math.max(cut,0),h1-1,q=>mod[q],gs);
   if(cut>=0){let sq=[];const fl=()=>{if(sq.length>1)o+=`<polyline fill="none" stroke="#6b7c85" stroke-width="1.3" opacity=".6" points="${sq.join(" ")}"/>`;sq=[]};
@@ -443,11 +451,11 @@ function chart(x){
     o+=`<polyline fill="none" stroke="var(--ac)" stroke-width="2.5" points="${s.map((v,i)=>X(h0+i)+","+Ys(v)).join(" ")}"/>`;
     S.EX.forEach(e=>{const q=(e.d-S.t0)/36e5;if(q<h0||q>=h1)return;o+=`<circle cx="${X(q)}" cy="${Ys(e.v)}" r="3.5" fill="var(--ac)"/><text x="${X(q)-12}" y="${Ys(e.v)+(e.t=="Alta"?-7:14)}">${hm(e.d)}</text>`})}
   S.days.filter(d=>Math.abs(d.d-x.d)<=1).forEach(d=>d.ev.forEach(e=>{const h=(e.d-S.t0)/36e5;if(!isFinite(h)||h<h0||h>h1)return;const sun=e.k=="alba"||e.k=="tramonto",c=sun?"#e8b400":"#8a8fa8";
-    o+=`<line x1="${X(h)}" x2="${X(h)}" y1="${hz}" y2="${bot}" stroke="${c}" stroke-dasharray="2 4" opacity=".7"/>${sun||!hasC?`<circle cx="${X(h)}" cy="${hz}" r="4" fill="${c}"/>`:moonDot(X(h),hz,SunCalc.getMoonIllumination(e.d).phase)}<text x="${X(h)}" y="${sun||!hasC?hz-9:hz+21}" text-anchor="middle">${hm(e.d)}</text>`}));
+    o+=`<line x1="${X(h)}" x2="${X(h)}" y1="${hz}" y2="${bot}" stroke="${c}" stroke-dasharray="2 4" opacity=".7"/>${sun||!hasC?`<circle cx="${X(h)}" cy="${hz}" r="4" fill="${c}"/>`:moonDot(X(h),hz,SunCalc.getMoonIllumination(e.d).phase)}<text x="${X(h)}" y="${sun||!hasC?hz-9:hz+21}" text-anchor="middle"${(sun||!hasC)&&hasC?' style="fill:#fff;stroke:rgba(0,0,0,.5);stroke-width:3px;paint-order:stroke"':""}>${hm(e.d)}</text>`}));
   ENT.forEach(q=>{const hh=(new Date(q.t)-S.t0)/36e5;if(!(hh>=h0&&hh<h1))return;const cx=X(hh),cat=q.tipo=="cattura",tv=Ysf&&S.sea?itp(S.sea,hh):null,cy=tv!=null?Ysf(tv):bot-6;
     o+=`<g onclick="event.stopPropagation();editEntry('${q.id}')" style="cursor:pointer"><circle cx="${cx}" cy="${cy}" r="7" fill="${cat?"#38bdf8":"#f97316"}"/><text x="${cx}" y="${cy+3}" text-anchor="middle" style="fill:#fff;font-size:9px;font-weight:700">${cat?"C":"N"}</text><title>${esc(q.t.slice(11)+" "+[q.specie,q.qta,q.prof?"prof. "+q.prof+" m":"",q.luogo,q.testo].filter(Boolean).join(" · "))}</title></g>`});
   const nh=(Date.now()-S.t0)/36e5;if(nh>h0&&nh<h1)o+=`<line x1="${X(nh)}" x2="${X(nh)}" y1="${cT}" y2="${bot}" stroke="var(--r)"/><text x="${X(nh)}" y="${Ht-4}" text-anchor="middle" style="fill:var(--r);font-weight:700;font-size:11px;stroke:var(--card);stroke-width:3px;paint-order:stroke">ora</text>`;
-  o+=`<line id="cur" y1="${cT}" y2="${bot}" stroke="var(--tx)" stroke-width="1" opacity=".35" style="display:none" pointer-events="none"/><circle id="hd" r="4.5" fill="none" stroke="var(--tx)" stroke-width="2" style="display:none" pointer-events="none"/><text id="curT" y="${Ht-4}" text-anchor="middle" style="display:none;fill:var(--ac);font-weight:700;font-size:11px;stroke:var(--card);stroke-width:3px;paint-order:stroke" pointer-events="none"></text></svg><div class="leg"><span style="color:var(--ac)">● marea</span> · ${S.cut>=0?`<span style="color:#6b7c85">● vento misurato</span> · <span style="color:var(--wind)">● vento previsto</span>`:`<span style="color:var(--wind)">● vento previsto</span>`} · <span style="color:#4a8fe7">▮ pioggia</span> · <span style="color:#9b59b6">- - pressione</span> · <span style="color:#1e40af">— acqua</span> · <span style="color:var(--g)">➤ nodi e direzione verso cui soffia</span> · <span style="color:var(--tx)">— orizzonte</span> · <span style="color:#e8b400">● sole</span> · <span style="color:#8a8fa8">● luna</span></div>`;
+  o+=`<line id="cur" y1="${cT}" y2="${bot}" stroke="var(--tx)" stroke-width="1" opacity=".35" style="display:none" pointer-events="none"/><circle id="hd" r="4.5" fill="none" stroke="var(--tx)" stroke-width="2" style="display:none" pointer-events="none"/><text id="curT" y="${Ht-4}" text-anchor="middle" style="display:none;fill:var(--ac);font-weight:700;font-size:11px;stroke:var(--card);stroke-width:3px;paint-order:stroke" pointer-events="none"></text></svg><div class="leg"><span style="color:var(--ac)">● marea</span> · ${S.cut>=0?`<span style="color:#6b7c85">● vento misurato</span> · <span style="color:var(--wind)">··· vento previsto</span>`:`<span style="color:var(--wind)">··· vento previsto</span>`} · <span style="color:#4a8fe7">▮ pioggia</span> · <span style="color:#9b59b6">- - pressione</span> · <span style="color:#1e40af">— T. acqua</span> · <span style="color:var(--wind)">➤ Intensità e direzione</span> · <span style="color:var(--ac)">∿ orizzonte</span> · <span style="color:#e8b400">● sole</span> · <span style="color:#8a8fa8">● luna</span></div>`;
   return o}
 window.addEventListener("resize",()=>{if(S)detail(S.days[sel])});
 load();
