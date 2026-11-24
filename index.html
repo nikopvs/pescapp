@@ -63,8 +63,8 @@ button.sec,label.btn.sec{background:var(--card);color:var(--tx);border:1px solid
 #arch .ar{font-size:12px;padding:6px 0;border-top:1px solid var(--bd)}#arch summary{cursor:pointer;font-weight:600}
 .card{position:relative}.tip{position:absolute;display:none;pointer-events:none;background:var(--card);color:var(--tx);border:1px solid var(--bd);border-radius:6px;padding:3px 8px;font-size:12px;z-index:5;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.25)}
 .mm{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;z-index:50;align-items:center;justify-content:center}.mm.on{display:flex}.mb{background:var(--card);border-radius:12px;padding:10px;width:min(900px,96vw)}#mapc{height:min(60vh,520px);border-radius:8px;margin:6px 0}.mh{font-size:13px}.pin{font-size:24px;line-height:24px;background:none;border:0}.pos{font-size:13px;color:var(--tx);padding:5px 0}
-.nv{display:none;gap:8px;justify-content:center;margin-top:6px}.nv button{padding:8px 14px;font-size:14px}
-@media(hover:none){.nv{display:flex}#det svg{touch-action:pan-y}}
+.ab{display:none;position:absolute;top:4px;right:4px;width:30px;height:30px;min-height:0;padding:0;border-radius:50%;border:1px solid var(--bd);background:var(--card);color:var(--ac);font-size:20px;line-height:1;opacity:.85;z-index:4}
+@media(hover:none){.ab{display:block}#det svg{touch-action:pan-y}}
 @media(max-width:600px){
 body{padding:8px}
 .bar{grid-template-columns:1fr;grid-template-areas:"h" "s";row-gap:2px}.bar h1{grid-area:h;font-size:17px;white-space:nowrap}.bar button{grid-area:b;padding:8px 12px}.bar #st{grid-area:s;text-align:left;max-width:none;font-size:11px}
@@ -357,7 +357,7 @@ function render(){
   const ic=S.days.filter(d=>d.src[0]=="I");
   const oc=S.days.filter(d=>d.src.includes("LIPZ")),dm=d=>d.date.getDate()+"/"+(d.date.getMonth()+1);
   $("icn").textContent=(oc.length?"Vento e pressione misurati (METAR dell’aeroporto di Venezia, LIPZ, via "+OBS.src+") nei giorni: "+oc.map(dm).join(", ")+"; la pioggia resta da modello, perché il METAR non misura i millimetri. ":"Osservazioni METAR LIPZ non disponibili ("+(OBS.msg||"dati insufficienti")+"). ")+(ic.length?"Giorni con previsioni ICON-2I ItaliaMeteo (2 km): "+ic.map(d=>d.date.getDate()+"/"+(d.date.getMonth()+1)).join(", ")+".":"ICON-2I non disponibile: usati solo i modelli globali.");
-  $("icn").textContent+=" "+(S.sstNote||"");
+  $("icn").textContent+=" "+(S.sstNote||"")+(S.cmpTxt?" "+S.cmpTxt:"");
 }
 const dirN=d=>{const n=["N","NNE","NE","ENE","E","ESE","SE","SSE","S","SSO","SO","OSO","O","ONO","NO","NNO"][Math.round(d/22.5)%16];
   const g=d>=22.5&&d<=78.75?"Bora":d>=101.25&&d<=168.75?"Scirocco":d>=191.25&&d<=258.75?"Libeccio":d>=281.25&&d<=348.75?"Maestrale":"";return g?n+" · "+g:n};
@@ -393,7 +393,7 @@ function detail(x){
   · Pesca in apnea: vicino ai picchi di marea (acqua ferma, entro circa 45 minuti) e ad alba e tramonto (entro circa 60 minuti), solo con la luce; il massimo si ha quando coincidono.<br>
   · Pesca: da subito dopo un picco di marea fino a 2 ore dopo, più alba e tramonto; bonus se in quel momento c’è anche il sorgere o il calare della luna.<br><br>
   I valori sono arrotondati, per questo i conti possono differire di un punto.</div></details>`;
-  $("det").innerHTML=`<div class="card"><div id="tip" class="tip"></div>${chart(x)}</div><div class="nv"><button class="sec" onclick="goDay(-1)" aria-label="Giorno precedente">◀</button><button class="sec" onclick="annota()">＋ Annota</button><button class="sec" onclick="goDay(1)" aria-label="Giorno successivo">▶</button></div><div id="frm"></div><div class="card">
+  $("det").innerHTML=`<div class="card"><div id="tip" class="tip"></div>${chart(x)}<button class="ab" onclick="annota()" aria-label="Aggiungi cattura o nota" title="Aggiungi cattura o nota">＋</button></div><div id="frm"></div><div class="card">
   <b>${x.date.toLocaleDateString("it-IT",{weekday:"long",day:"numeric",month:"long"})}</b>
   <div class="big"><div style="background:${col(x.apnea)}" title="${tA}"><span class="n">${x.apnea}</span> 🤿 Pesca in apnea</div><div style="background:${col(x.canna)}" title="${tF}"><span class="n">${x.canna}</span> 🎣 Pesca</div><div style="background:${col(x.clarity)}" title="${tC}"><span class="n">${x.clarity}</span> 💧 Trasparenza dell’acqua</div></div>
   <div class="wins" hidden><div><b>🤿 Momenti migliori Pesca in apnea</b><br>${wl(x.win.S)}</div><div><b>🎣 Momenti migliori Pesca</b><br>${wl(x.win.F)}</div></div>
@@ -405,7 +405,7 @@ ${annH}</div>${how}`;
 }
 function chart(x){
   const NAR=innerWidth<600,W=Math.max(300,Math.min(1400,innerWidth-(NAR?24:40))),Ht=NAR?Math.max(270,Math.min(340,Math.round(innerHeight*.4))):Math.max(280,Math.round(innerHeight*.42));
-  const h0=Math.max(0,x.a-(NAR?6:24)),h1=Math.min(S.n,x.a+(NAR?30:48)),L=NAR?30:36,R=W-8;
+  const h0=Math.max(0,x.a-(NAR?6:24)),h1=Math.min(S.n,x.a+(NAR?30:48)),L=NAR?10:14,R=W-10;
   CH={W,L,R,h0,h1};
   const cT=40,cB=cT+Math.round(Ht*.22),hz=cB,top=cB+30,bot=Ht-18;
   const X=h=>L+(h-h0)/(h1-h0)*(R-L),Ya=a=>hz-cl(a,0,65)/65*(hz-cT-4);
@@ -416,7 +416,7 @@ function chart(x){
   const moonDot=(x,y,ph)=>{const r=6,m=ph>.5?1-ph:ph,k=Math.cos(2*Math.PI*m);return `<g transform="translate(${x},${y}) scale(${ph>.5?-1:1},1)"><circle r="${r}" fill="#111" stroke="#8a8fa8"/><path d="M0,${-r}A${r},${r} 0 0 1 0,${r}A${(Math.abs(k)*r).toFixed(2)},${r} 0 0 ${k>0?0:1} 0,${-r}Z" fill="#fff"/></g>`};
   if(hasC){
     for(let h=h0;h<h1;h+=.5)if(pos(SunCalc.getPosition,h)<0)o+=`<rect x="${X(h)}" y="${cT}" width="${(R-L)/(h1-h0)/2+.5}" height="${bot-cT}" fill="#5b6b8c" opacity=".16"/>`;
-    o+=`<line x1="${L}" x2="${R}" y1="${hz}" y2="${hz}" stroke="var(--bd)" stroke-dasharray="3 3"/><text x="2" y="${hz+11}">orizz.</text>`;
+    o+=`<line x1="${L}" x2="${R}" y1="${hz}" y2="${hz}" stroke="var(--tx)" stroke-width="1.6" opacity=".6"/>`;
     const seg=(f,c)=>{let cur=[],r="";const fl=()=>{if(cur.length>1)r+=`<polyline fill="none" stroke="${c}" stroke-width="2" points="${cur.join(" ")}"/>`;cur=[]};
       for(let h=h0;h<=h1;h+=.5){const a=pos(f,h);if(a>0)cur.push(X(h).toFixed(1)+","+Ya(a).toFixed(1));else fl()}fl();return r};
     o+=seg(SunCalc.getPosition,"#e8b400")+seg(SunCalc.getMoonPosition,"#8a8fa8");
@@ -447,7 +447,7 @@ function chart(x){
   ENT.forEach(q=>{const hh=(new Date(q.t)-S.t0)/36e5;if(!(hh>=h0&&hh<h1))return;const cx=X(hh),cat=q.tipo=="cattura",tv=Ysf&&S.sea?itp(S.sea,hh):null,cy=tv!=null?Ysf(tv):bot-6;
     o+=`<g onclick="event.stopPropagation();editEntry('${q.id}')" style="cursor:pointer"><circle cx="${cx}" cy="${cy}" r="7" fill="${cat?"#38bdf8":"#f97316"}"/><text x="${cx}" y="${cy+3}" text-anchor="middle" style="fill:#fff;font-size:9px;font-weight:700">${cat?"C":"N"}</text><title>${esc(q.t.slice(11)+" "+[q.specie,q.qta,q.prof?"prof. "+q.prof+" m":"",q.luogo,q.testo].filter(Boolean).join(" · "))}</title></g>`});
   const nh=(Date.now()-S.t0)/36e5;if(nh>h0&&nh<h1)o+=`<line x1="${X(nh)}" x2="${X(nh)}" y1="${cT}" y2="${bot}" stroke="var(--r)"/><text x="${X(nh)}" y="${Ht-4}" text-anchor="middle" style="fill:var(--r);font-weight:700;font-size:11px;stroke:var(--card);stroke-width:3px;paint-order:stroke">ora</text>`;
-  o+=`<line id="cur" y1="${cT}" y2="${bot}" stroke="var(--tx)" stroke-width="1" opacity=".35" style="display:none" pointer-events="none"/><circle id="hd" r="4.5" fill="none" stroke="var(--tx)" stroke-width="2" style="display:none" pointer-events="none"/><text id="curT" y="${Ht-4}" text-anchor="middle" style="display:none;fill:var(--ac);font-weight:700;font-size:11px;stroke:var(--card);stroke-width:3px;paint-order:stroke" pointer-events="none"></text></svg><div class="leg"><span style="color:var(--ac)">● marea</span> · ${S.cut>=0?`<span style="color:#6b7c85">● vento misurato</span> · <span style="color:var(--wind)">● vento previsto</span>`:`<span style="color:var(--wind)">● vento previsto</span>`} · <span style="color:#4a8fe7">▮ pioggia</span> · <span style="color:#9b59b6">- - pressione</span> · <span style="color:#1e40af">— acqua</span> · <span style="color:var(--g)">➤ nodi e direzione verso cui soffia</span> · <span style="color:#e8b400">● sole</span> · <span style="color:#8a8fa8">● luna</span>${S.cmpTxt?"<br>"+S.cmpTxt:""}</div>`;
+  o+=`<line id="cur" y1="${cT}" y2="${bot}" stroke="var(--tx)" stroke-width="1" opacity=".35" style="display:none" pointer-events="none"/><circle id="hd" r="4.5" fill="none" stroke="var(--tx)" stroke-width="2" style="display:none" pointer-events="none"/><text id="curT" y="${Ht-4}" text-anchor="middle" style="display:none;fill:var(--ac);font-weight:700;font-size:11px;stroke:var(--card);stroke-width:3px;paint-order:stroke" pointer-events="none"></text></svg><div class="leg"><span style="color:var(--ac)">● marea</span> · ${S.cut>=0?`<span style="color:#6b7c85">● vento misurato</span> · <span style="color:var(--wind)">● vento previsto</span>`:`<span style="color:var(--wind)">● vento previsto</span>`} · <span style="color:#4a8fe7">▮ pioggia</span> · <span style="color:#9b59b6">- - pressione</span> · <span style="color:#1e40af">— acqua</span> · <span style="color:var(--g)">➤ nodi e direzione verso cui soffia</span> · <span style="color:var(--tx)">— orizzonte</span> · <span style="color:#e8b400">● sole</span> · <span style="color:#8a8fa8">● luna</span></div>`;
   return o}
 window.addEventListener("resize",()=>{if(S)detail(S.days[sel])});
 load();
