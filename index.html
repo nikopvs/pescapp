@@ -22,7 +22,7 @@ select,button{font:inherit;padding:7px 10px;border-radius:8px;border:1px solid v
 button{cursor:pointer;background:var(--ac);color:#fff;border:0}
 .days{display:flex;gap:6px;overflow-x:auto;padding-bottom:8px}
 .day{flex:0 0 74px;background:var(--card);border:2px solid var(--bd);border-radius:10px;padding:6px;text-align:center;cursor:pointer;font-size:12px}
-.day.past{opacity:.6}.day.sel{border-color:var(--ac)}.day.today b{color:var(--ac)}
+.day.past{opacity:.6}.day.sel{border-color:var(--ac)}.day b{font-weight:500}.day.today b{color:var(--ac);font-weight:900}
 .sc{display:flex;justify-content:space-around;margin-top:4px;font-weight:700;font-size:13px}
 .sc span{padding:1px 5px;border-radius:6px;color:#fff}
 .card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:12px;margin-top:10px}
@@ -63,6 +63,9 @@ button.sec,label.btn.sec{background:var(--card);color:var(--tx);border:1px solid
 #arch .ar{font-size:12px;padding:6px 0;border-top:1px solid var(--bd)}#arch summary{cursor:pointer;font-weight:600}
 .card{position:relative}.tip{position:absolute;display:none;pointer-events:none;background:var(--card);color:var(--tx);border:1px solid var(--bd);border-radius:6px;padding:3px 8px;font-size:12px;z-index:5;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.25)}
 .mm{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;z-index:50;align-items:center;justify-content:center}.mm.on{display:flex}.mb{background:var(--card);border-radius:12px;padding:10px;width:min(900px,96vw)}#mapc{height:min(60vh,520px);border-radius:8px;margin:6px 0}.mh{font-size:13px}.pin{font-size:24px;line-height:24px;background:none;border:0}.pos{font-size:13px;color:var(--tx);padding:5px 0}
+.camm{position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:50;display:flex;align-items:center;justify-content:center;padding:10px}.camb{width:min(960px,100%);background:var(--card);border-radius:12px;overflow:hidden;box-shadow:0 8px 30px rgba(0,0,0,.5)}.camh{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;gap:10px;font-size:14px}.camh span{display:flex;align-items:center;gap:12px}.camh a{color:var(--ac);font-size:12px}.camh button{min-height:0;width:32px;height:32px;border-radius:50%;border:1px solid var(--bd);background:var(--card);color:var(--tx);font-size:16px;padding:0}.camf{position:relative;aspect-ratio:16/9;background:#000}.camf iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.t a.xl{padding:0 0 0 3px;border:0;background:none;color:var(--ac);font-weight:700;font-size:inherit}.camh a{padding:5px 9px}
+.cams{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:2px 0 6px;font-size:12px;color:var(--mu)}.cams a{color:var(--ac);text-decoration:none;border:1px solid var(--bd);border-radius:14px;padding:3px 10px;background:var(--card)}.cams a:hover{border-color:var(--ac)}
 .vw{display:flex;justify-content:flex-end;align-items:center;gap:4px;height:22px;margin:0 0 4px}.vw button{min-height:0;padding:2px 9px;font-size:12px;border-radius:6px;background:transparent;color:var(--mu);border:1px solid var(--bd)}.vw button.on{background:var(--ac);color:#fff;border-color:var(--ac)}
 .ab{display:none;position:absolute;width:28px;height:28px;min-height:0;padding:0;border-radius:7px;background:rgba(127,140,150,.18);border:1px solid rgba(100,115,125,.75);color:var(--tx);z-index:4;align-items:center;justify-content:center}
 @media(hover:none),(pointer:coarse),(max-width:600px){.ab{display:flex}#det svg{touch-action:pan-y}}
@@ -79,6 +82,7 @@ button,label.btn{min-height:36px}
 }
 </style></head><body>
 <div class="bar"><h1>🎣 Pesca: Venezia</h1><span id="st">Caricamento…</span></div>
+<div class="cams" id="cams"></div>
 <div class="days" id="days"></div>
 <div id="det"></div>
 <details class="card" id="arch"><summary>Archivio annotazioni e condizioni meteo</summary><div id="archBody"></div></details>
@@ -88,6 +92,25 @@ button,label.btn{min-height:36px}
 const SP={ve:{lat:45.33,lon:12.30,mlat:"45.30,45.22,45.12",mlon:"12.50,12.62,12.75"},ma:{lat:45.70,lon:13.15,mlat:45.62,mlon:13.30}};
 let VIEW=(()=>{try{const v=+localStorage.getItem('pescapp_view');if([1,3,5,7].includes(v))return v}catch(e){}return innerWidth<600?1:3})();
 function setView(v){VIEW=v;try{localStorage.setItem('pescapp_view',v)}catch(e){}if(S)detail(S.days[sel])}
+// Webcam: modifica qui nomi e indirizzi (aggiungi o togli righe a piacere)
+const WEBCAMS=[
+ {n:"Riva Sette Martiri",u:"https://garr.tv/w/mmcUH36eiWADJbD5HZCx1u",e:"https://garr.tv/videos/embed/mmcUH36eiWADJbD5HZCx1u"},
+ {n:"CNR SUD",u:"https://garr.tv/w/aGRQgNqbZYirFHP6bPvbEW",e:"https://garr.tv/videos/embed/aGRQgNqbZYirFHP6bPvbEW"},
+ {n:"CNR Sub -6m",u:"https://garr.tv/w/dSi5EfQeAWXsRJnAhJDQ14",e:"https://garr.tv/videos/embed/dSi5EfQeAWXsRJnAhJDQ14"},
+ {n:"Laguna NORD",u:"https://youtu.be/-wMWwWQiFgI"},
+ {n:"Chioggia",u:"https://www.skylinewebcams.com/it/webcam/italia/veneto/venezia/sottomarina-lido-chioggia.html"}
+];
+// e = indirizzo "embed" del video: se presente la webcam si apre in un popup, altrimenti in una nuova scheda
+(function(){const el=document.getElementById("cams");if(!el||!WEBCAMS.length)return;
+ el.innerHTML="<span>📷 Webcam</span>"+WEBCAMS.map((w,i)=>w.e?`<a href="${w.u}" onclick="openCam(${i});return false">${w.n}</a>`:`<a href="${w.u}" target="_blank" rel="noopener noreferrer">${w.n} ↗</a>`).join("")})();
+function openCam(i){const w=WEBCAMS[i];closeCam();const m=document.createElement("div");m.id="camm";m.className="camm";
+ m.innerHTML=`<div class="camb"><div class="camh"><b>${w.n}</b><span><a href="${w.u}" target="_blank" rel="noopener noreferrer">Apri in una scheda ↗</a><button onclick="closeCam()" aria-label="Chiudi">✕</button></span></div><div class="camf"><iframe title="${w.n}" src="${w.e}${w.e.includes("?")?"&":"?"}${w.p||"autoplay=1&muted=1"}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></div></div>`;
+ m.onclick=ev=>{if(ev.target===m)closeCam()};document.body.appendChild(m)}
+function closeCam(){const m=document.getElementById("camm");if(m){const f=m.querySelector("iframe");if(f)f.src="about:blank";m.remove()}}
+document.addEventListener("keydown",ev=>{if(ev.key==="Escape")closeCam()});
+const WCS=[[0,[20,225,160]],[5,[20,225,160]],[10,[255,235,0]],[20,[255,30,40]],[30,[214,40,214]]];
+function windCol(v){v=Math.max(0,v||0);let c=WCS[WCS.length-1][1];if(v<WCS[WCS.length-1][0])for(let i=1;i<WCS.length;i++)if(v<=WCS[i][0]){const[a,c0]=WCS[i-1],[b,c1]=WCS[i],t=(v-a)/(b-a);c=c0.map((q,k)=>Math.round(q+(c1[k]-q)*t));break}return`rgb(${c})`}
+const WGRAD="background:linear-gradient(90deg,rgb(20,225,160) 0%,rgb(20,225,160) 15%,rgb(255,235,0) 40%,rgb(255,30,40) 70%,rgb(214,40,214) 100%);-webkit-background-clip:text;background-clip:text;color:transparent;font-weight:700";
 const TOUCH=(()=>{try{return matchMedia('(hover: none)').matches||matchMedia('(pointer: coarse)').matches||matchMedia('(any-pointer: coarse)').matches||innerWidth<600||navigator.maxTouchPoints>0&&!matchMedia('(any-hover: hover)').matches}catch(e){return innerWidth<600}})();
 const qual=v=>v>=80?"ottime":v>=60?"buone":v>=40?"discrete":v>=20?"difficili":"pessime";
 function whyText(k,x){
@@ -428,7 +451,7 @@ function detail(x){
   <b>${x.date.toLocaleDateString("it-IT",{weekday:"long",day:"numeric",month:"long"})}</b>
   <div class="big"><div class="${HOW=="a"?"on":""}" onclick="toggleHow('a')" style="background:${col(x.apnea)};color:${txc(x.apnea)}" title="${tA}"><span class="n">${x.apnea}</span> 🤿 Pesca in apnea</div><div class="${HOW=="f"?"on":""}" onclick="toggleHow('f')" style="background:${col(x.canna)};color:${txc(x.canna)}" title="${tF}"><span class="n">${x.canna}</span> 🎣 Pesca</div><div class="${HOW=="c"?"on":""}" onclick="toggleHow('c')" style="background:${col(x.clarity)};color:${txc(x.clarity)}" title="${tC}"><span class="n">${x.clarity}</span> 💧 Trasparenza dell’acqua</div></div>${HOW?`<div class="howbox">${whyText(HOW=="f"?"f":HOW,x)}</div>`:""}
   <div class="wins" hidden><div><b>🤿 Momenti migliori Pesca in apnea</b><br>${wl(x.win.S)}</div><div><b>🎣 Momenti migliori Pesca</b><br>${wl(x.win.F)}</div></div>
-  <div class="tiles">${T(S.sstKind=="stima"?"Temp. acqua (stima)":"Temp. acqua (mare)",x.sst==null?"n/d":x.sst.toFixed(1).replace(".",",")+" °C"+(x.sstTr!=null&&Math.abs(x.sstTr)>=.1?" "+(x.sstTr>0?"↗ +":"↘ ")+x.sstTr.toFixed(1).replace(".",","):""))}${T("Vento medio",x.avgW.toFixed(0)+" kn")}${T("Provenienza",dirN(x.dir))}${T("Pressione",`<span style="white-space:nowrap">${x.pm.toFixed(0)} hPa ${Math.abs(x.trend)<1?"→":x.trend>0?"↗":"↘"} ${x.trend>0?"+":""}${x.trend.toFixed(0)}</span>`)}${T("Spinta marea (stima)",(x.surge>0?"+":"")+x.surge+" cm")}${T("Raffica max",x.maxG.toFixed(0)+" kn")}${T("Pioggia giorno",x.rainDay.toFixed(1)+" mm")}${T("Pioggia 60h",x.rainPrev.toFixed(1)+" mm")}${T("Onda",x.wave==null?"n/d":x.wave.toFixed(1)+" m")}${T("Escursione marea",S.tide?x.range.toFixed(2)+" m":"n/d")}${c.rate!=null?T("Corrente marea",c.rate.toFixed(1)+" cm/h · "+(c.rate<3?"quasi ferma":c.rate<6?"debole":c.rate<=14?"buona":c.rate<24?"forte":"troppo forte")):""}${T("Luna",mp)}</div>
+  <div class="tiles">${T((S.sstKind=="stima"?"T. acqua (stima)":"T. acqua (mare)")+` <a class="xl" href="https://seatemperature.info/it/venezia-temperatura-mare.html" target="_blank" rel="noopener noreferrer" title="Confronta con seatemperature.info">↗</a>`,x.sst==null?"n/d":x.sst.toFixed(1).replace(".",",")+" °C"+(x.sstTr!=null&&Math.abs(x.sstTr)>=.1?" "+(x.sstTr>0?"↗ +":"↘ ")+x.sstTr.toFixed(1).replace(".",","):""))}${T("Vento medio",x.avgW.toFixed(0)+" kn")}${T("Provenienza",dirN(x.dir))}${T("Pressione",`<span style="white-space:nowrap">${x.pm.toFixed(0)} hPa ${Math.abs(x.trend)<1?"→":x.trend>0?"↗":"↘"} ${x.trend>0?"+":""}${x.trend.toFixed(0)}</span>`)}${T("Spinta marea (stima)",(x.surge>0?"+":"")+x.surge+" cm")}${T("Raffica max",x.maxG.toFixed(0)+" kn")}${T("Pioggia giorno",x.rainDay.toFixed(1)+" mm")}${T("Pioggia 60h",x.rainPrev.toFixed(1)+" mm")}${T("Onda",x.wave==null?"n/d":x.wave.toFixed(1)+" m")}${T("Escursione marea",S.tide?x.range.toFixed(2)+" m":"n/d")}${c.rate!=null?T("Corrente marea",c.rate.toFixed(1)+" cm/h · "+(c.rate<3?"quasi ferma":c.rate<6?"debole":c.rate<=14?"buona":c.rate<24?"forte":"troppo forte")):""}${T("Luna",mp)}</div>
 ${annH}</div>${how}`;
   renderForm();renderArchive();
   const sv=document.querySelector&&document.querySelector("#det svg");
@@ -465,12 +488,14 @@ function chart(x){
   for(let h=h0;h<h1;h++)if(S.t[h].getHours()==0)o+=`<line x1="${X(h)}" x2="${X(h)}" y1="${top-4}" y2="${bot}" stroke="var(--bd)"/><text x="${X(h)+3}" y="${Ht-4}"${h==x.a?' style="fill:var(--ac);font-weight:700"':""}>${S.t[h].toLocaleDateString("it-IT",{weekday:"short",day:"numeric"})}</text>`;
   for(let h=h0;h<h1;h++){const p=S.pr[h]||0;if(p>0)o+=`<rect x="${X(h)}" y="${bot-Math.min(p,5)*12}" width="${(R-L)/(h1-h0)}" height="${Math.min(p,5)*12}" fill="#4a8fe7" opacity=".5"/>`}
   const ws=S.ws.slice(h0,h1).map(v=>v||0),wm=Math.max(20,...ws),Yw=v=>bot-(v/wm)*(bot-top);CH.Yw=Yw;
-  const mod=S.mws||S.ws,cut=S.cut==null?-1:S.cut,gs=`stroke="var(--wind)" stroke-width="1.6" stroke-linecap="round" stroke-dasharray="0.1 4" opacity=".95"`;
+  const mod=S.mws||S.ws,cut=S.cut==null?-1:S.cut;
+  const f0=Math.max(Math.max(cut,0),h0),f1=Math.min(h1-1,h1-1);let gst="";for(let q=f0;q<=f1;q++){const v=mod[q];if(v==null)continue;gst+=`<stop offset="${f1>f0?((X(q)-X(f0))/(X(f1)-X(f0))).toFixed(4):0}" stop-color="${windCol(v)}"/>`}
+  o+=`<defs><linearGradient id="wgr" gradientUnits="userSpaceOnUse" x1="${X(f0)}" x2="${X(f1)+.01}" y1="0" y2="0">${gst}</linearGradient></defs>`;
+  const gs=`stroke="url(#wgr)" stroke-width="2.2" stroke-linecap="round" stroke-dasharray="0.1 4.5"`;
   const pl=(f,t,v,st)=>{const p=[];for(let q=Math.max(f,h0);q<=Math.min(t,h1-1);q++)if(v(q)!=null)p.push(X(q)+","+Yw(v(q)));return p.length>1?`<polyline fill="none" ${st} points="${p.join(" ")}"/>`:""};
   o+=pl(Math.max(cut,0),h1-1,q=>mod[q],gs);
-  if(cut>=0){let sq=[];const fl=()=>{if(sq.length>1)o+=`<polyline fill="none" stroke="#6b7c85" stroke-width="1.3" opacity=".6" points="${sq.join(" ")}"/>`;sq=[]};
-    for(let q=h0;q<h1;q++){if(S.mfl[q]&&S.ws[q]!=null)sq.push(X(q)+","+Yw(S.ws[q]));else fl()}fl()}
-  const stp=[1,2,3,4,6,8,12].find(v=>v*pph>=38)||12;for(let h=h0+1;h<h1;h+=stp){const dd=S.wd[h];if(dd==null)continue;const ac=(S.mfl&&S.mfl[h])?"#6b7c85":"var(--wind)";o+=`<text x="${X(h)}" y="12" text-anchor="middle" style="fill:${ac};font-weight:600;stroke:var(--card);stroke-width:2px;paint-order:stroke">${Math.round(S.ws[h]||0)}</text><path d="M0,-6 L4,4 L0,2 L-4,4Z" fill="${ac}" transform="translate(${X(h)},28) rotate(${(dd+180)%360})"/>`}
+  if(cut>=0){for(let q=h0;q<h1-1;q++)if(S.mfl[q]&&S.mfl[q+1]&&S.ws[q]!=null&&S.ws[q+1]!=null)o+=`<line x1="${X(q)}" y1="${Yw(S.ws[q])}" x2="${X(q+1)}" y2="${Yw(S.ws[q+1])}" stroke="${windCol((S.ws[q]+S.ws[q+1])/2)}" stroke-width="1.8" stroke-linecap="round"/>`}
+  const stp=[1,2,3,4,6,8,12].find(v=>v*pph>=38)||12;for(let h=h0+1;h<h1;h+=stp){const dd=S.wd[h];if(dd==null)continue;const ac=windCol(S.ws[h]||0);o+=`<text x="${X(h)}" y="12" text-anchor="middle" style="fill:${ac};font-weight:600;stroke:var(--card);stroke-width:2px;paint-order:stroke">${Math.round(S.ws[h]||0)}</text><path d="M0,-6 L4,4 L0,2 L-4,4Z" fill="${ac}" transform="translate(${X(h)},28) rotate(${(dd+180)%360})"/>`}
   const pp=S.ps.slice(h0,h1);if(pp.length&&pp[0]!=null){const pl=Math.min(...pp)-1,ph=Math.max(...pp)+1,Yp=v=>bot-30-(v-pl)/(ph-pl)*(bot-top-60);CH.Yp=Yp;
     o+=`<polyline fill="none" stroke="#9b59b6" stroke-width="1.5" stroke-dasharray="5 3" points="${pp.map((v,i)=>X(h0+i)+","+Yp(v)).join(" ")}"/>`}
   {const sv=(S.sst||[]).slice(h0,h1).filter(v=>v!=null);
@@ -487,7 +512,7 @@ function chart(x){
   ENT.forEach(q=>{const hh=(new Date(q.t)-S.t0)/36e5;if(!(hh>=h0&&hh<h1))return;const cx=X(hh),cat=q.tipo=="cattura",tv=Ysf&&S.sea?itp(S.sea,hh):null,cy=tv!=null?Ysf(tv):bot-6;
     o+=`<g onclick="event.stopPropagation();editEntry('${q.id}')" style="cursor:pointer"><circle cx="${cx}" cy="${cy}" r="7" fill="${cat?"#38bdf8":"#f97316"}"/><text x="${cx}" y="${cy+3}" text-anchor="middle" style="fill:#fff;font-size:9px;font-weight:700">${cat?"C":"N"}</text><title>${esc(q.t.slice(11)+" "+[q.specie,q.qta,q.prof?"prof. "+q.prof+" m":"",q.luogo,q.testo].filter(Boolean).join(" · "))}</title></g>`});
   const nh=(Date.now()-S.t0)/36e5;if(nh>h0&&nh<h1)o+=`<line x1="${X(nh)}" x2="${X(nh)}" y1="${cT}" y2="${bot}" stroke="var(--r)"/><text x="${X(nh)}" y="${Ht-4}" text-anchor="middle" style="fill:var(--r);font-weight:700;font-size:11px;stroke:var(--card);stroke-width:3px;paint-order:stroke">ora</text>`;
-  o+=`<line id="cur" y1="${cT}" y2="${bot}" stroke="var(--tx)" stroke-width="1" opacity=".35" style="display:none" pointer-events="none"/><circle id="hd" r="4.5" fill="none" stroke="var(--tx)" stroke-width="2" style="display:none" pointer-events="none"/><text id="curT" y="${Ht-4}" text-anchor="middle" style="display:none;fill:var(--ac);font-weight:700;font-size:11px;stroke:var(--card);stroke-width:3px;paint-order:stroke" pointer-events="none"></text></svg><div class="leg"><span style="color:var(--ac)">● marea</span> · ${S.cut>=0?`<span style="color:#6b7c85">● vento misurato</span> · `:""}<span style="color:var(--wind)">··· vento previsto</span> · <span style="color:var(--wind)">➤ Intensità e direzione</span> · <span style="color:#4a8fe7">▮ pioggia</span> · <span style="color:#9b59b6">- - pressione</span> · <span style="color:#1e40af">— T. acqua</span> · <span style="color:var(--ac)">∿ orizzonte</span> · <span style="color:#e8b400">● sole</span> · <span style="color:#8a8fa8">● luna</span></div>`;
+  o+=`<line id="cur" y1="${cT}" y2="${bot}" stroke="var(--tx)" stroke-width="1" opacity=".35" style="display:none" pointer-events="none"/><circle id="hd" r="4.5" fill="none" stroke="var(--tx)" stroke-width="2" style="display:none" pointer-events="none"/><text id="curT" y="${Ht-4}" text-anchor="middle" style="display:none;fill:var(--ac);font-weight:700;font-size:11px;stroke:var(--card);stroke-width:3px;paint-order:stroke" pointer-events="none"></text></svg><div class="leg"><span style="color:var(--ac)">● marea</span> · ${S.cut>=0?`<span style="${WGRAD}">━━ vento misurato</span> · `:""}<span style="${WGRAD}">····· vento previsto</span> · <span style="${WGRAD}">➤ Intensità e direzione (kn)</span> · <span style="color:#4a8fe7">▮ pioggia</span> · <span style="color:#9b59b6">- - pressione</span> · <span style="color:#1e40af">— T. acqua</span> · <span style="color:var(--ac)">∿ orizzonte</span> · <span style="color:#e8b400">● sole</span> · <span style="color:#8a8fa8">● luna</span></div>`;
   return o}
 window.addEventListener("resize",()=>{if(S)detail(S.days[sel])});
 load();
