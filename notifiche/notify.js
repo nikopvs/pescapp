@@ -33,9 +33,12 @@ const TEST = process.env.TEST === "1";
     try {
       await pg.waitForFunction(() => (typeof S !== "undefined" && S && S.days && S.days.length) || /^Errore/.test((document.getElementById("st") || {}).textContent || ""), null, { timeout: 60000 });
     } catch (e) { /* timeout: lo stato viene stampato sotto */ }
-    days = await pg.evaluate(() => (typeof S !== "undefined" && S && S.days && S.days.length) ? S.days.map((x, i) => ({
-      i, d: x.date.toISOString(), apnea: x.apnea, canna: x.canna, clarity: x.clarity, vento: Math.round(x.avgW)
-    })) : null);
+    days = await pg.evaluate(() => (typeof S !== "undefined" && S && S.days && S.days.length) ? S.days.map((x, i) => {
+      const n = snap(x);
+      return { i, giorno: n.giorno, apnea: x.apnea, canna: x.canna, clarity: x.clarity,
+        vento: n.vento, pressione: n.pressione, pioggia: n.pioggia, onda: n.onda_m, acqua: n.acqua, marea: n.marea, luna: n.luna,
+        sole_luna: n.sole_luna, why: { a: whyText("a", x), c: whyText("c", x), p: whyText("p", x) } };
+    }) : null);
     if (!days) {
       console.log("Tentativo " + t + " fallito. Stato app: " + await pg.evaluate(() => (document.getElementById("st") || {}).textContent));
       if (t < 4) await new Promise(r => setTimeout(r, 20000 * t));
@@ -47,26 +50,61 @@ const TEST = process.env.TEST === "1";
 
   const today = 7; // l'app mostra 7 giorni passati, oggi, 7 futuri
   const from = cfg.includi_oggi ? today : today + 1, to = today + cfg.giorni_avanti;
-  const nomi = ["dom", "lun", "mar", "mer", "gio", "ven", "sab"];
-  const righe = [];
+  const qual = v => v >= 80 ? "ottime" : v >= 60 ? "buone" : v >= 40 ? "discrete" : v >= 20 ? "difficili" : "pessime";
+  const qualAcqua = v => v >= 80 ? "ottima" : v >= 60 ? "buona" : v >= 40 ? "discreta" : v >= 20 ? "scarsa" : "pessima";
+  const GG = ["domenica", "lunedì", "martedì", "mercoledì", "giovedì", "venerdì", "sabato"];
+  const dec = (v, d = 0) => v == null ? "n/d" : Number(v).toFixed(d).replace(".", ",");
+  const esc = t => String(t).replace(/&/g, "&amp;").replace(/</g, "&lt;");
+  const bullets = html => {
+    const [pro, con = ""] = html.split("⚠️ <b>Contro</b>");
+    const pick = h => h.split("<br>").filter(r => r.startsWith("• ") && !r.includes("nessuno")).map(r => r.slice(2).replace(/<[^>]+>/g, "").trim());
+    return { pro: pick(pro.split("✅ <b>A favore</b>")[1] || ""), con: pick(con) };
+  };
+  const uniq = arr => [...new Set(arr)];
+  const blocchi = [];
   for (const x of days.slice(from, to + 1)) {
     const a = x.apnea >= cfg.soglia_apnea, c = x.canna >= cfg.soglia_pesca;
     if (!a && !c) continue;
-    const dt = new Date(x.d), lab = nomi[dt.getDay()] + " " + dt.getDate() + "/" + (dt.getMonth() + 1);
-    const parti = [];
-    if (a) parti.push("🤿 apnea " + x.apnea);
-    if (c) parti.push("🎣 pesca " + x.canna);
-    righe.push(`<b>${lab}</b>: ${parti.join(" · ")} · acqua ${x.clarity} · vento ${x.vento} kn`);
+    const [Y, M, D] = x.giorno.split("-").map(Number);
+    const nome = GG[new Date(Date.UTC(Y, M - 1, D)).getUTCDay()];
+    const oggi = x.i === today ? " (oggi)" : x.i === today + 1 ? " (domani)" : "";
+    const L = [`📅 <b>${nome[0].toUpperCase() + nome.slice(1)} ${D}/${M}${oggi}</b>`];
+    L.push(`${a ? "⭐" : "▫️"} 🤿 Pesca in apnea <b>${x.apnea}</b> (${qual(x.apnea)})`);
+    L.push(`${c ? "⭐" : "▫️"} 🎣 Pesca <b>${x.canna}</b> (${qual(x.canna)})`);
+    L.push("");
+    const v = x.vento, pr = x.pioggia, pe = x.pressione;
+    L.push(`💧 Acqua: trasparenza ${qualAcqua(x.clarity)} (${x.clarity})` + (x.acqua && x.acqua.media_c != null ? `, ${dec(x.acqua.media_c, 1)} °C` : ""));
+    L.push(`💨 Vento: ${dec(v.medio_kn)} kn da ${v.prov}, raffiche fino a ${dec(v.raffica_kn)} kn`);
+    const ev = (x.marea.eventi || []).map(e => `${/^H|alta/i.test(e.t) ? "alta" : "bassa"} ${e.ora}`);
+    if (ev.length) L.push(`🌊 Marea: ${ev.join(" · ")}` + (x.marea.escursione_m != null ? ` (escursione ${dec(x.marea.escursione_m, 1)} m)` : ""));
+    if (x.onda != null) L.push(`〰️ Onda: ${dec(x.onda, 1)} m`);
+    L.push(`🌧 Pioggia: ${pr.giorno_mm > 0.2 ? dec(pr.giorno_mm, 1) + " mm oggi" : "nessuna oggi"}` + (pr.prec60h_mm > 0.5 ? `, ${dec(pr.prec60h_mm, 1)} mm nelle ultime 60 ore` : ""));
+    L.push(`🧭 Pressione: ${pe.hpa} hPa (${pe.var24h > 0 ? "+" : ""}${dec(pe.var24h)} in 24 ore)`);
+    const B = [];
+    if (a) B.push(bullets(x.why.a));
+    if (c) B.push(bullets(x.why.p));
+    B.push(bullets(x.why.c));
+    const pro = uniq(B.flatMap(b => b.pro)), con = uniq(B.flatMap(b => b.con));
+    if (pro.length) L.push("", "✅ <b>Perché è buono</b>", ...pro.slice(0, 5).map(t => "• " + esc(t)));
+    if (con.length) L.push("", "⚠️ <b>Da tenere d'occhio</b>", ...con.slice(0, 4).map(t => "• " + esc(t)));
+    blocchi.push(L.join("\n"));
   }
+  const testa = "🌊 <b>Pesca: Venezia</b>\nCondizioni favorevoli nei prossimi giorni (⭐ = sopra soglia)\n";
   let testo = null;
-  if (righe.length) testo = "🌊 <b>Pesca: Venezia</b>, condizioni favorevoli\n\n" + righe.join("\n");
+  if (blocchi.length) testo = testa + "\n" + blocchi.join("\n\n──────────\n\n");
   else if (TEST) testo = "✅ Notifiche Pesca: Venezia attive. Al momento nessun giorno supera le soglie.";
   console.log(testo || "Nessun giorno sopra soglia: nessuna notifica.");
   if (!testo || DRY) { if (DRY && testo) console.log("(dry run: non inviato)"); return; }
-  const r = await fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage`, {
-    method: "POST", headers: { "content-type": "application/json" },
-    body: JSON.stringify({ chat_id: CHAT, text: testo, parse_mode: "HTML", disable_web_page_preview: true })
-  });
-  if (!r.ok) { console.error("Telegram:", r.status, await r.text()); process.exit(1); }
+  const pezzi = [], parti = testo.split("\n\n──────────\n\n");
+  let cur = "";
+  for (const p of parti) { if (cur && (cur + p).length > 3800) { pezzi.push(cur); cur = ""; } cur += (cur ? "\n\n──────────\n\n" : "") + p; }
+  if (cur) pezzi.push(cur);
+  for (const t of pezzi) {
+    const r = await fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage`, {
+      method: "POST", headers: { "content-type": "application/json" },
+      body: JSON.stringify({ chat_id: CHAT, text: t, parse_mode: "HTML", disable_web_page_preview: true })
+    });
+    if (!r.ok) { console.error("Telegram:", r.status, await r.text()); process.exit(1); }
+  }
   console.log("Inviato.");
 })().catch(e => { console.error(e); process.exit(1); });
