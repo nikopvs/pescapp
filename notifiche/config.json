@@ -1,0 +1,6 @@
+{
+  "soglia_apnea": 85,
+  "soglia_pesca": 85,
+  "giorni_avanti": 3,
+  "includi_oggi": true
+}
