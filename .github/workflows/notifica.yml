@@ -1,0 +1,23 @@
+name: Notifica pesca
+on:
+  schedule:
+    - cron: "30 5 * * *"
+  workflow_dispatch:
+    inputs:
+      test:
+        description: "Invia sempre un messaggio di prova"
+        type: boolean
+        default: true
+jobs:
+  notifica:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - run: npm install playwright@1.49.0 && npx playwright install --with-deps chromium
+      - run: node notifiche/notify.js
+        env:
+          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+          TELEGRAM_CHAT: ${{ secrets.TELEGRAM_CHAT }}
+          TEST: ${{ github.event.inputs.test == 'true' && '1' || '0' }}
