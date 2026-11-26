@@ -9,6 +9,18 @@
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-startup-image" href="splash/s-1320x2868.jpg" media="(device-width: 440px) and (device-height: 956px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+<link rel="apple-touch-startup-image" href="splash/s-1206x2622.jpg" media="(device-width: 402px) and (device-height: 874px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+<link rel="apple-touch-startup-image" href="splash/s-1290x2796.jpg" media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+<link rel="apple-touch-startup-image" href="splash/s-1179x2556.jpg" media="(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+<link rel="apple-touch-startup-image" href="splash/s-1284x2778.jpg" media="(device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+<link rel="apple-touch-startup-image" href="splash/s-1170x2532.jpg" media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+<link rel="apple-touch-startup-image" href="splash/s-1125x2436.jpg" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+<link rel="apple-touch-startup-image" href="splash/s-1242x2688.jpg" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+<link rel="apple-touch-startup-image" href="splash/s-828x1792.jpg" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+<link rel="apple-touch-startup-image" href="splash/s-1242x2208.jpg" media="(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+<link rel="apple-touch-startup-image" href="splash/s-750x1334.jpg" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+<link rel="apple-touch-startup-image" href="splash/s-640x1136.jpg" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
 <title>Pesca: Venezia</title>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/suncalc/1.9.0/suncalc.min.js"></script>
@@ -69,7 +81,7 @@ button.sec,label.btn.sec{background:var(--card);color:var(--tx);border:1px solid
 .camw{padding:10px;min-height:220px;background:var(--bg);font-size:13px}
 .camf{position:relative;aspect-ratio:16/9;background:#000}.camf iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
 .t a.xl{padding:0 0 0 3px;border:0;background:none;color:var(--ac);font-weight:700;font-size:inherit}.camh a{padding:5px 9px}
-.cams{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:2px 0 6px;font-size:12px;color:var(--mu)}.cams a{color:var(--ac);text-decoration:none;border:1px solid var(--bd);border-radius:14px;padding:3px 10px;background:var(--card)}.cams select{font:inherit;font-size:13px;color:var(--ac);background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:5px 10px;max-width:100%;cursor:pointer}.cams select:hover{border-color:var(--ac)}
+.cams{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:2px 0 6px;font-size:12px;color:var(--mu)}.cams a{color:var(--ac);text-decoration:none;border:1px solid var(--bd);border-radius:14px;padding:3px 10px;background:var(--card)}.cams select{font:inherit;font-size:13px;color:var(--ac);background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:5px 10px;max-width:100%;cursor:pointer}.cams select:hover{border-color:var(--ac)}.cams{display:flex;gap:6px;align-items:center}.cams .tgb{font-size:16px;line-height:1;padding:6px 9px;border:1px solid var(--bd);border-radius:14px;background:var(--card);text-decoration:none}.cams .tgb:hover{border-color:var(--ac)}
 .vw{display:flex;justify-content:flex-end;align-items:center;gap:4px;height:22px;margin:0 0 4px}.vw button{min-height:0;padding:2px 9px;font-size:12px;border-radius:6px;background:transparent;color:var(--mu);border:1px solid var(--bd)}.vw button.on{background:var(--ac);color:#fff;border-color:var(--ac)}
 .ab{display:none;position:absolute;width:28px;height:28px;min-height:0;padding:0;border-radius:7px;background:rgba(127,140,150,.18);border:1px solid rgba(100,115,125,.75);color:var(--tx);z-index:4;align-items:center;justify-content:center}
 @media(hover:none),(pointer:coarse),(max-width:600px){.ab{display:flex}#det svg{touch-action:pan-y}}
@@ -103,6 +115,8 @@ const SP={ve:{lat:45.33,lon:12.30,mlat:"45.30,45.22,45.12",mlon:"12.50,12.62,12.
 let VIEW=(()=>{try{const v=+localStorage.getItem('pescapp_view');if([1,3,5,7].includes(v))return v}catch(e){}return innerWidth<600?1:3})();
 function setView(v){VIEW=v;try{localStorage.setItem('pescapp_view',v)}catch(e){}if(S)detail(S.days[sel])}
 // Webcam: modifica qui nomi e indirizzi (aggiungi o togli righe a piacere)
+// Link d'invito al canale Telegram delle notifiche (es. "https://t.me/+AbCdEf..."). Se vuoto, il pulsante 🔔 è nascosto.
+const TG_LINK="https://t.me/+qCXeTHvxQlVkYzE0";
 const WEBCAMS=[
  {n:"CNR SUD",u:"https://garr.tv/w/aGRQgNqbZYirFHP6bPvbEW",e:"https://garr.tv/videos/embed/aGRQgNqbZYirFHP6bPvbEW"},
  {n:"CNR Sub -6m",u:"https://garr.tv/w/dSi5EfQeAWXsRJnAhJDQ14",e:"https://garr.tv/videos/embed/dSi5EfQeAWXsRJnAhJDQ14"},
@@ -114,7 +128,8 @@ const WEBCAMS=[
 // e = indirizzo "embed" del video: se presente la webcam si apre in un popup, altrimenti in una nuova scheda
 (function(){const el=document.getElementById("cams");if(!el||!WEBCAMS.length)return;
  el.innerHTML=`<select id="camsel" aria-label="Webcam"><option value="">📷 Webcam…</option>${WEBCAMS.map((w,i)=>`<option value="${i}">${w.n}${(w.e||w.w)?"":" ↗"}</option>`).join("")}</select>`;
- document.getElementById("camsel").onchange=function(){const i=this.value;this.value="";if(i==="")return;const w=WEBCAMS[+i];if(w.e||w.w)openCam(+i);else window.open(w.u,"_blank","noopener")}})();
+ document.getElementById("camsel").onchange=function(){const i=this.value;this.value="";if(i==="")return;const w=WEBCAMS[+i];if(w.e||w.w)openCam(+i);else window.open(w.u,"_blank","noopener")}
+ if(TG_LINK)el.insertAdjacentHTML("beforeend",`<a class="tgb" href="${TG_LINK}" target="_blank" rel="noopener noreferrer" title="Iscriviti alle notifiche Telegram" aria-label="Notifiche Telegram">🔔</a>`)})();
 function openCam(i){const w=WEBCAMS[i];closeCam();const m=document.createElement("div");m.id="camm";m.className="camm";
  if(w.w){ // Windy: time-lapse (ultime ore) con player ufficiale
   m.innerHTML=`<div class="camb"><div class="camh"><b>${w.n}</b><span><a href="${w.u}" target="_blank" rel="noopener noreferrer">Apri su Windy ↗</a><button onclick="closeCam()" aria-label="Chiudi">✕</button></span></div><div class="camw"><a name="windy-webcam-timelapse-player" data-id="${w.w}" data-play="day" data-loop="0" data-auto-play="0" data-force-full-screen-on-overlay-play="0" data-interactive="1" href="${w.u}" target="_blank" rel="noopener noreferrer">${w.t||w.n}</a><div class="cap">Time-lapse dell’ultimo giorno (non è una diretta). Fonte: Windy.</div></div></div>`;
@@ -290,7 +305,7 @@ async function load(auto){
     mergeIcon(W,I);mergeMetar(W,R);
     const MM=pickMarine(M);S=compute(W,MM.h,k);S.sstNote=MM.note;refreshArchive();
     $("st").textContent="Aggiornato "+new Date().toLocaleString("it-IT",{dateStyle:"short",timeStyle:"short"})+(S.tide?"":" – livello marino non disponibile")+waterTxt();
-    sel=(auto&&prevT0===S.t0)?prevSel:PAST;render();
+    sel=(auto&&prevT0===S.t0)?prevSel:PAST;render();hideSplash();
   }catch(e){$("st").textContent=(auto&&S?"Aggiornamento non riuscito, riprovo tra poco · ":"")+"Errore: "+e.message+" (serve connessione; apri il file nel browser)."}
 }
 function waterTxt(){const i=Math.round((Date.now()-S.t0)/36e5),v=(S.sst&&S.sst[i]!=null)?S.sst[i]:(S.days[PAST]&&S.days[PAST].sst);
@@ -549,6 +564,9 @@ function chart(x){
   o+=`<line id="cur" y1="${cT}" y2="${bot}" stroke="var(--tx)" stroke-width="1" opacity=".35" style="display:none" pointer-events="none"/><circle id="hd" r="4.5" fill="none" stroke="var(--tx)" stroke-width="2" style="display:none" pointer-events="none"/><text id="curT" y="${Ht-4}" text-anchor="middle" style="display:none;fill:var(--ac);font-weight:700;font-size:11px;stroke:var(--card);stroke-width:3px;paint-order:stroke" pointer-events="none"></text></svg><div class="leg"><span style="color:var(--ac)">● marea</span> · <span style="${WGRAD}">····· vento</span> · <span style="${WGRAD}">➤ Intensità e direzione (kn)</span> · <span style="color:#4a8fe7">▮ pioggia</span> · <span style="color:#9b59b6">- - pressione</span> · <span style="color:#1e40af">— T. acqua</span> · <span style="color:var(--ac)">∿ orizzonte</span> · <span style="color:#e8b400">● sole</span> · <span style="color:#8a8fa8">● luna</span></div>`;
   return o}
 window.addEventListener("resize",()=>{if(S)detail(S.days[sel])});
+(function(){try{const sa=(window.matchMedia&&matchMedia("(display-mode: standalone)").matches)||navigator.standalone;if(!sa)return;
+ const im=new Image();im.onload=function(){if(window.__spOff)return;const d=document.createElement("div");d.id="splash";d.style.cssText="position:fixed;inset:0;z-index:9999;background:#0a4f73 url(splash/s-1170x2532.jpg) center/cover no-repeat;transition:opacity .5s";document.body.appendChild(d);window.__sp=d;setTimeout(hideSplash,12000)};im.src="splash/s-1170x2532.jpg"}catch(e){}})();
+function hideSplash(){window.__spOff=1;const d=window.__sp;if(!d)return;d.style.opacity=0;setTimeout(()=>d.remove(),600);window.__sp=null}
 load();
 let LASTLOAD=Date.now();const _ld=load;
 function autoRefresh(){if(FORM||document.hidden)return;LASTLOAD=Date.now();_ld(true)}
