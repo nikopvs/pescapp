@@ -251,11 +251,9 @@ let FB={a:"",p:"",c:"",testo:"",nome:"",st:""};
 function fbSend(){
   const x=S.days[sel];if(!FB_KEY){FB.st="err:Invio non ancora attivo.";renderForm();return}
   if(!FB.a&&!FB.p&&!FB.c&&!FB.testo.trim()){FB.st="err:Scrivi qualcosa o scegli almeno un giudizio.";renderForm();return}
-  const d=snap(x),ore=d.ore;delete d.ore;
+  const d=snap(x);delete d.ore;
   const g={giusto:"giusto",alto:"TROPPO ALTO",basso:"TROPPO BASSO"},j=v=>v?g[v]:"non indicato",n1=v=>v==null?"n/d":String(Math.round(v*10)/10).replace(".",","),L="━━━━━━━━━━━━━━━━━━━━";
   const gg=["domenica","lunedì","martedì","mercoledì","giovedì","venerdì","sabato"][x.date.getDay()];
-  const dirs=["N","NE","E","SE","S","SO","O","NO"],dn=v=>v==null?"":dirs[Math.round(v/45)%8];
-  let t3=[];if(ore&&ore.vento_kn){const h0=new Date(ore.da.length>10?ore.da:ore.da+"T00:00");for(let i=0;i<ore.vento_kn.length;i+=3){const hh=new Date(h0.getTime()+i*36e5);if(hh.toDateString()!=x.date.toDateString())continue;t3.push(String(hh.getHours()).padStart(2,"0")+":00  "+n1(ore.vento_kn[i])+" kn "+dn(ore.dir_gradi&&ore.dir_gradi[i])+(ore.pioggia_mm&&ore.pioggia_mm[i]>0.1?"  · pioggia "+n1(ore.pioggia_mm[i])+" mm":""))}}
   const v=d.vento||{},m=d.marea||{},pr=d.pioggia||{},pe=d.pressione||{};
   const mev=(m.eventi||[]).map(e=>(e.cm>0?"+":"")+e.cm+" ("+e.ora+")").join(" · ");
   const msg=[`FEEDBACK · ${gg} ${x.date.getDate()}/${x.date.getMonth()+1}/${x.date.getFullYear()}`,`Da: ${FB.nome.trim()||"Anonimo"}`,"",L,"I GIUDIZI",L,
@@ -263,7 +261,7 @@ function fbSend(){
    `Vento: ${n1(v.medio_kn)} kn da ${v.prov||"n/d"}, raffica max ${n1(v.raffica_kn)} kn`,`Marea: ${mev||"n/d"}${m.escursione_m!=null?" · Δ "+n1(m.escursione_m)+" m":""}`,
    `Pioggia: ${n1(pr.giorno_mm)} mm oggi, ${n1(pr.prec60h_mm)} mm nelle ultime 60 ore`,`Pressione: ${pe.hpa} hPa (${pe.var24h>0?"+":""}${n1(pe.var24h)} in 24 h)`,
    `Temperatura acqua: ${d.acqua&&d.acqua.media_c!=null?n1(d.acqua.media_c)+" °C":"n/d"}`,`Onda: ${d.onda_m==null?"n/d":n1(d.onda_m)+" m"}`,`Agitazione residua della laguna: ${n1(x.cmp.agit)}`,
-   ...(t3.length?["",L,"VENTO OGNI 3 ORE",L,...t3]:[]),"",L,"DATI TECNICI",L,`Versione app: ${APPV}`,JSON.stringify(d)].join("\n");
+   "",L,"DATI TECNICI",L,`Versione app: ${APPV}`].join("\n");
   FB.st="wait:Invio in corso…";renderForm();
   fetch("https://api.web3forms.com/submit",{method:"POST",headers:{"Content-Type":"application/json",Accept:"application/json"},body:JSON.stringify({access_key:FB_KEY,subject:"Feedback Pesca: Venezia · "+d.giorno,from_name:FB.nome.trim()||"Anonimo",message:msg})})
    .then(r=>r.json()).then(r=>{if(r&&r.success){FB={a:"",p:"",c:"",testo:"",nome:FB.nome,st:"ok:Grazie! Feedback inviato."}}else FB.st="err:Invio non riuscito"+(r&&r.message?" ("+r.message+")":"")+".";renderForm()})
