@@ -116,6 +116,9 @@ let VIEW=(()=>{try{const v=+localStorage.getItem('pescapp_view');if([1,3,5,7].in
 function setView(v){VIEW=v;try{localStorage.setItem('pescapp_view',v)}catch(e){}if(S)detail(S.days[sel])}
 // Webcam: modifica qui nomi e indirizzi (aggiungi o togli righe a piacere)
 // Link d'invito al canale Telegram delle notifiche (es. "https://t.me/+AbCdEf..."). Se vuoto, il pulsante 🔔 è nascosto.
+// Chiave pubblica di Web3Forms (web3forms.com) per ricevere i feedback via email. Se vuota, l'invio è disattivato.
+const FB_KEY="3d4cf5af-bdca-478b-a9fc-81b7b7185be4";
+const APPV="2026-11-26";
 const TG_LINK="https://t.me/+qCXeTHvxQlVkYzE0";
 const WEBCAMS=[
  {n:"CNR SUD",u:"https://garr.tv/w/aGRQgNqbZYirFHP6bPvbEW",e:"https://garr.tv/videos/embed/aGRQgNqbZYirFHP6bPvbEW"},
@@ -244,11 +247,34 @@ function goDay(n){const k=sel+n;if(k<0||k>=S.days.length)return;sel=k;render()}
 function annota(){const x=S.days[sel],now=(Date.now()-S.t0)/36e5;openForm(now>=x.a&&now<x.a+24?now:x.a+12)}
 function openForm(hh){const d=new Date(S.t0+hh*36e5);d.setMinutes(Math.round(d.getMinutes()/5)*5,0,0);
   FORM={id:null,t:tstr(d),tipo:"cattura",att:"canna",specie:"",qta:"",prof:"",luogo:"",lat:null,lon:null,testo:""};detail(S.days[sel]);const f=document.getElementById("frm");if(f&&f.scrollIntoView)f.scrollIntoView({block:"nearest"})}
+let FB={a:"",p:"",c:"",testo:"",nome:"",st:""};
+function fbSend(){
+  const x=S.days[sel];if(!FB_KEY){FB.st="err:Invio non ancora attivo.";renderForm();return}
+  if(!FB.a&&!FB.p&&!FB.c&&!FB.testo.trim()){FB.st="err:Scrivi qualcosa o scegli almeno un giudizio.";renderForm();return}
+  const d=snap(x);delete d.ore;const g={giusto:"giusto",alto:"troppo alto",basso:"troppo basso"},j=v=>v?g[v]:"non indicato";
+  const msg=`Feedback sul giorno ${d.giorno}\n\nPesca in apnea (${x.apnea}): ${j(FB.a)}\nPesca (${x.canna}): ${j(FB.p)}\nTrasparenza dell’acqua (${x.clarity}): ${j(FB.c)}\n\nNota: ${FB.testo.trim()||"—"}\n\nVersione app: ${APPV}\nDati del giorno:\n${JSON.stringify(d)}`;
+  FB.st="wait:Invio in corso…";renderForm();
+  fetch("https://api.web3forms.com/submit",{method:"POST",headers:{"Content-Type":"application/json",Accept:"application/json"},body:JSON.stringify({access_key:FB_KEY,subject:"Feedback Pesca: Venezia · "+d.giorno,from_name:FB.nome.trim()||"Anonimo",message:msg})})
+   .then(r=>r.json()).then(r=>{if(r&&r.success){FB={a:"",p:"",c:"",testo:"",nome:FB.nome,st:"ok:Grazie! Feedback inviato."}}else FB.st="err:Invio non riuscito, riprova più tardi.";renderForm()})
+   .catch(()=>{FB.st="err:Invio non riuscito: controlla la connessione.";renderForm()})}
+function renderFb(el){
+  const x=S.days[sel],opt=(k,v)=>`<select onchange="FB.${k}=this.value"><option value="">Non so</option><option value="giusto"${v=="giusto"?" selected":""}>Giusto</option><option value="alto"${v=="alto"?" selected":""}>Troppo alto</option><option value="basso"${v=="basso"?" selected":""}>Troppo basso</option></select>`;
+  const [stt,stm]=FB.st?[FB.st.split(":")[0],FB.st.slice(FB.st.indexOf(":")+1)]:["",""];
+  el.innerHTML=`<div class="card frm"><b>💬 Feedback sul giorno ${x.date.getDate()}/${x.date.getMonth()+1}</b>
+  <div class="fr"><label>Tipo <select onchange="FORM.tipo=this.value;renderForm()"><option value="cattura">🐟 Cattura</option><option value="nota">📝 Nota</option><option value="feedback" selected>💬 Feedback</option></select></label></div>
+  <div style="font-size:13px;color:var(--mu);margin:6px 0">I punteggi di questo giorno ti sembrano giusti?</div>
+  <div class="fr"><label>🤿 Apnea (${x.apnea}) ${opt("a",FB.a)}</label><label>🎣 Pesca (${x.canna}) ${opt("p",FB.p)}</label><label>💧 Trasparenza (${x.clarity}) ${opt("c",FB.c)}</label></div>
+  <label class="wide">Cosa hai trovato in acqua?<textarea rows="3" placeholder="es. acqua torbida, visibilità 1 m, vento più forte del previsto…" oninput="FB.testo=this.value">${esc(FB.testo)}</textarea></label>
+  <label class="wide">Il tuo nome (facoltativo)<input value="${esc(FB.nome)}" oninput="FB.nome=this.value"></label>
+  <div style="font-size:12px;color:var(--mu);margin:6px 0">Vengono inviati solo i tuoi giudizi, la nota e i dati meteo del giorno selezionato.</div>
+  ${stm?`<div style="margin:6px 0;font-weight:600;color:${stt=="ok"?"#0a8f5a":stt=="err"?"#c0262d":"var(--mu)"}">${esc(stm)}</div>`:""}
+  <div class="fr"><button onclick="fbSend()"${stt=="wait"?" disabled":""}>Invia</button><button class="sec" onclick="FORM=null;FB.st=\"\";renderForm()">Chiudi</button></div></div>`}
 function renderForm(){const el=$("frm");if(!el)return;if(!FORM){el.innerHTML="";return}
+  if(FORM.tipo=="feedback"){renderFb(el);return}
   const f=FORM,sl=(a,b)=>a==b?" selected":"",cat=f.tipo=="cattura";
   el.innerHTML=`<div class="card frm"><b>${f.id?"Modifica":"Nuova"} annotazione</b>
   <div class="fr"><label>Ora <input type="datetime-local" value="${esc(f.t)}" oninput="FORM.t=this.value"></label>
-  <label>Tipo <select onchange="FORM.tipo=this.value;renderForm()"><option value="cattura"${sl(f.tipo,"cattura")}>🐟 Cattura</option><option value="nota"${sl(f.tipo,"nota")}>📝 Nota</option></select></label>
+  <label>Tipo <select onchange="FORM.tipo=this.value;renderForm()"><option value="cattura"${sl(f.tipo,"cattura")}>🐟 Cattura</option><option value="nota"${sl(f.tipo,"nota")}>📝 Nota</option><option value="feedback">💬 Feedback</option></select></label>
   ${cat?`<label>Tecnica <select onchange="FORM.att=this.value"><option value="apnea"${sl(f.att,"apnea")}>🤿 Apnea</option><option value="canna"${sl(f.att,"canna")}>🎣 Canna</option></select></label>
   <label>Specie <input value="${esc(f.specie)}" oninput="FORM.specie=this.value"></label>
   <label>Quantità <input placeholder="es. 3 oppure 1,2 kg" value="${esc(f.qta)}" oninput="FORM.qta=this.value"></label>
