@@ -601,7 +601,10 @@ function chart(x){
   const nh=(Date.now()-S.t0)/36e5;if(nh>h0&&nh<h1)o+=`<line x1="${X(nh)}" x2="${X(nh)}" y1="${cT}" y2="${bot}" stroke="var(--r)"/><text x="${X(nh)}" y="${Ht-4}" text-anchor="middle" style="fill:var(--r);font-weight:700;font-size:11px;stroke:var(--card);stroke-width:3px;paint-order:stroke">ora</text>`;
   o+=`<line id="cur" y1="${cT}" y2="${bot}" stroke="var(--tx)" stroke-width="1" opacity=".35" style="display:none" pointer-events="none"/><circle id="hd" r="4.5" fill="none" stroke="var(--tx)" stroke-width="2" style="display:none" pointer-events="none"/><text id="curT" y="${Ht-4}" text-anchor="middle" style="display:none;fill:var(--ac);font-weight:700;font-size:11px;stroke:var(--card);stroke-width:3px;paint-order:stroke" pointer-events="none"></text></svg><div class="leg"><span style="color:var(--ac)">● marea</span> · <span style="${WGRAD}">····· vento</span> · <span style="${WGRAD}">➤ Intensità e direzione (kn)</span> · <span style="color:#4a8fe7">▮ pioggia</span> · <span style="color:#9b59b6">- - pressione</span> · <span style="color:#1e40af">— T. acqua</span> · <span style="color:var(--ac)">∿ orizzonte</span> · <span style="color:#e8b400">● sole</span> · <span style="color:#8a8fa8">● luna</span></div>`;
   return o}
-window.addEventListener("resize",()=>{if(S)detail(S.days[sel])});
+let _rw=innerWidth;window.addEventListener("resize",()=>{
+  // La tastiera del telefono cambia solo l'altezza: ridisegnare chiuderebbe la tastiera. Si ridisegna solo se cambia la larghezza e non si sta scrivendo.
+  const ae=document.activeElement,typing=ae&&/^(INPUT|TEXTAREA|SELECT)$/.test(ae.tagName);
+  if(innerWidth===_rw||typing)return;_rw=innerWidth;if(S)detail(S.days[sel])});
 (function(){try{const sa=(window.matchMedia&&matchMedia("(display-mode: standalone)").matches)||navigator.standalone;if(!sa)return;
  const im=new Image();im.onload=function(){if(window.__spOff)return;const d=document.createElement("div");d.id="splash";d.style.cssText="position:fixed;inset:0;z-index:9999;background:#0a4f73 url(splash/s-1170x2532.jpg) center/cover no-repeat;transition:opacity .5s";document.body.appendChild(d);window.__sp=d;setTimeout(hideSplash,12000)};im.src="splash/s-1170x2532.jpg"}catch(e){}})();
 function hideSplash(){window.__spOff=1;const d=window.__sp;if(!d)return;d.style.opacity=0;setTimeout(()=>d.remove(),600);window.__sp=null}
