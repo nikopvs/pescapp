@@ -255,7 +255,7 @@ function fbSend(){
   const msg=`Feedback sul giorno ${d.giorno}\n\nPesca in apnea (${x.apnea}): ${j(FB.a)}\nPesca (${x.canna}): ${j(FB.p)}\nTrasparenza dell’acqua (${x.clarity}): ${j(FB.c)}\n\nNota: ${FB.testo.trim()||"—"}\n\nVersione app: ${APPV}\nDati del giorno:\n${JSON.stringify(d)}`;
   FB.st="wait:Invio in corso…";renderForm();
   fetch("https://api.web3forms.com/submit",{method:"POST",headers:{"Content-Type":"application/json",Accept:"application/json"},body:JSON.stringify({access_key:FB_KEY,subject:"Feedback Pesca: Venezia · "+d.giorno,from_name:FB.nome.trim()||"Anonimo",message:msg})})
-   .then(r=>r.json()).then(r=>{if(r&&r.success){FB={a:"",p:"",c:"",testo:"",nome:FB.nome,st:"ok:Grazie! Feedback inviato."}}else FB.st="err:Invio non riuscito, riprova più tardi.";renderForm()})
+   .then(r=>r.json()).then(r=>{if(r&&r.success){FB={a:"",p:"",c:"",testo:"",nome:FB.nome,st:"ok:Grazie! Feedback inviato."}}else FB.st="err:Invio non riuscito"+(r&&r.message?" ("+r.message+")":"")+".";renderForm()})
    .catch(()=>{FB.st="err:Invio non riuscito: controlla la connessione.";renderForm()})}
 function renderFb(el){
   const x=S.days[sel],opt=(k,v)=>`<select onchange="FB.${k}=this.value"><option value="">Non so</option><option value="giusto"${v=="giusto"?" selected":""}>Giusto</option><option value="alto"${v=="alto"?" selected":""}>Troppo alto</option><option value="basso"${v=="basso"?" selected":""}>Troppo basso</option></select>`;
@@ -268,7 +268,7 @@ function renderFb(el){
   <label class="wide">Il tuo nome (facoltativo)<input value="${esc(FB.nome)}" oninput="FB.nome=this.value"></label>
   <div style="font-size:12px;color:var(--mu);margin:6px 0">Vengono inviati solo i tuoi giudizi, la nota e i dati meteo del giorno selezionato.</div>
   ${stm?`<div style="margin:6px 0;font-weight:600;color:${stt=="ok"?"#0a8f5a":stt=="err"?"#c0262d":"var(--mu)"}">${esc(stm)}</div>`:""}
-  <div class="fr"><button onclick="fbSend()"${stt=="wait"?" disabled":""}>Invia</button><button class="sec" onclick="FORM=null;FB.st=\"\";renderForm()">Chiudi</button></div></div>`}
+  <div class="fr"><button onclick="fbSend()"${stt=="wait"?" disabled":""}>Invia</button><button class="sec" onclick="FORM=null;FB.st='';renderForm()">Chiudi</button></div></div>`}
 function renderForm(){const el=$("frm");if(!el)return;if(!FORM){el.innerHTML="";return}
   if(FORM.tipo=="feedback"){renderFb(el);return}
   const f=FORM,sl=(a,b)=>a==b?" selected":"",cat=f.tipo=="cattura";
