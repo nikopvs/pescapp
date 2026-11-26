@@ -93,7 +93,7 @@ button.sec,label.btn.sec{background:var(--card);color:var(--tx);border:1px solid
 .camf{position:relative;aspect-ratio:16/9;background:#000}.camf iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
 .t a.xl{padding:0 0 0 3px;border:0;background:none;color:var(--ac);font-weight:700;font-size:inherit}.camh a{padding:5px 9px}
 .cams{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:2px 0 6px;font-size:12px;color:var(--mu)}.cams a{color:var(--ac);text-decoration:none;border:1px solid var(--bd);border-radius:14px;padding:3px 10px;background:var(--card)}.cams select{font:inherit;font-size:13px;color:var(--ac);background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:5px 10px;max-width:100%;cursor:pointer}.cams select:hover{border-color:var(--ac)}.cams{display:flex;gap:6px;align-items:center}.cams .tgb{font-size:16px;line-height:1;padding:6px 9px;border:1px solid var(--bd);border-radius:14px;background:var(--card);text-decoration:none}.cams .tgb:hover{border-color:var(--ac)}
-.mn{display:flex;align-items:center;justify-content:center;gap:10px;margin:2px 0 6px}.mn b{min-width:150px;text-align:center;text-transform:capitalize;font-size:16px}.mn button{min-height:0;padding:3px 12px;font-size:16px;border-radius:8px;background:transparent;color:var(--tx);border:1px solid var(--bd)}.mn button:disabled{opacity:.3}.mn button.td{font-size:12px;color:var(--ac);border-color:var(--ac)}.mci{margin:8px 4px 4px;font-size:13px;line-height:1.45}.mcl{margin:6px 4px 2px;font-size:11px;color:var(--mu)}
+.mn{display:flex;align-items:center;justify-content:center;gap:10px;margin:2px 0 6px}.mn b{min-width:150px;text-align:center;text-transform:capitalize;font-size:16px}.mn button{min-height:0;padding:3px 12px;font-size:16px;border-radius:8px;background:transparent;color:var(--tx);border:1px solid var(--bd)}.mn button:disabled{opacity:.3}.mn button.td{font-size:12px;color:var(--ac);border-color:var(--ac)}.mcgo{display:inline-block;margin-top:8px;min-height:0;padding:7px 12px;font:inherit;font-size:13px;border-radius:10px;background:transparent;color:var(--ac);border:1px solid var(--ac);cursor:pointer}.mci{margin:8px 4px 4px;font-size:13px;line-height:1.45}.mcl{margin:6px 4px 2px;font-size:11px;color:var(--mu)}
 .vw{display:flex;justify-content:flex-end;align-items:center;gap:4px;height:22px;margin:0 0 4px}.vw button{min-height:0;padding:2px 9px;font-size:12px;border-radius:6px;background:transparent;color:var(--mu);border:1px solid var(--bd)}.vw button.on{background:var(--ac);color:#fff;border-color:var(--ac)}
 .ab{display:none;position:absolute;width:28px;height:28px;min-height:0;padding:0;border-radius:7px;background:rgba(127,140,150,.18);border:1px solid rgba(100,115,125,.75);color:var(--tx);z-index:4;align-items:center;justify-content:center}
 @media(hover:none),(pointer:coarse),(max-width:600px){.ab{display:flex}#det svg{touch-action:pan-y}}
@@ -126,7 +126,7 @@ button,label.btn{min-height:36px}
 <script>
 const SP={ve:{lat:45.33,lon:12.30,mlat:"45.30,45.22,45.12",mlon:"12.50,12.62,12.75"},ma:{lat:45.70,lon:13.15,mlat:45.62,mlon:13.30}};
 let VIEW=(()=>{try{const v=+localStorage.getItem('pescapp_view');if([1,3,5,7].includes(v))return v}catch(e){}return innerWidth<600?1:3})();
-function setView(v){MONTH=null;VIEW=v;try{localStorage.setItem('pescapp_view',v)}catch(e){}if(S)detail(S.days[sel])}
+function setView(v){MONTH=null;MDAY=null;VIEW=v;try{localStorage.setItem('pescapp_view',v)}catch(e){}if(S)detail(S.days[sel])}
 // Webcam: modifica qui nomi e indirizzi (aggiungi o togli righe a piacere)
 // Link d'invito al canale Telegram delle notifiche (es. "https://t.me/+AbCdEf..."). Se vuoto, il pulsante 🔔 è nascosto.
 // Chiave pubblica di Web3Forms (web3forms.com) per ricevere i feedback via email. Se vuota, l'invio è disattivato.
@@ -502,7 +502,7 @@ function render(){
     c.className="day"+(x.d<PAST?" past":"")+(x.d==PAST?" today":"")+(x.d==sel?" sel":"");
     const db=dayBest(x),ds=db.v;
     c.innerHTML=`<b>${x.date.toLocaleDateString("it-IT",{weekday:"short"})}</b> ${x.date.getDate()}/${x.date.getMonth()+1}<div class="sc1" style="background:${col(ds)};color:${txc(ds)}" title="Il migliore tra Apnea (${x.apnea}) e Canna (${x.canna}); l’icona indica la tecnica favorita"><span>${ds}</span>${ds>90?`<small>${db.ic.length>2?"🤿<br>🎣":db.ic}</small>`:""}</div>`;
-    c.onclick=()=>{sel=x.d;MONTH=null;render()};el.appendChild(c)});
+    c.onclick=()=>{sel=x.d;MONTH=null;MDAY=null;render()};el.appendChild(c)});
   el.children[sel].scrollIntoView({inline:"center",block:"nearest"});
   detail(S.days[sel]);
   const ic=S.days.filter(d=>d.src[0]=="I");
@@ -546,7 +546,7 @@ function detail(x){
   · Apnea: vicino ai picchi di marea (acqua ferma, entro circa 45 minuti) e ad alba e tramonto (entro circa 60 minuti), solo con la luce; il massimo si ha quando coincidono.<br>
   · Canna: da subito dopo un picco di marea fino a 2 ore dopo, più alba e tramonto; bonus se in quel momento c’è anche il sorgere o il calare della luna.<br><br>
   I valori sono arrotondati, per questo i conti possono differire di un punto.</div></details>`;
-  $("det").innerHTML=`<div class="card dk"><div class="vw">${[1,3,5,7].filter(v=>v>1||innerWidth<600).map(v=>`<button class="${!MONTH&&(v==1&&innerWidth>=600?3:VIEW)==v?"on":""}" onclick="setView(${v})">${v}g</button>`).join("")}<button class="${MONTH?"on":""}" onclick="setMonth()">Mese</button></div><div id="tip" class="tip"></div>${MONTH?monthChart():chart(x)}${MONTH?"":`<button class="ab" style="top:${34+CH.bot-37}px;left:${8+CH.L}px" onclick="annota()" aria-label="Aggiungi cattura o nota" title="Aggiungi cattura o nota"><svg viewBox="0.1 0.1 19.9 18.8" width="16.8" height="16" aria-hidden="true"><path fill="var(--tx)" d="M3 17.25V21h3.75L17.8 9.94l-3.75-3.75L3 17.25zM20.7 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" transform="translate(2.5 1.5) scale(.82)"/><path d="M5 1.5v7M1.5 5h7" stroke="var(--tx)" stroke-width="2.4" stroke-linecap="round" fill="none"/></svg></button>`}</div><div id="frm"></div><div class="card">
+  $("det").innerHTML=`<div class="card dk"><div class="vw">${[1,3,5,7].filter(v=>v>1||innerWidth<600).map(v=>`<button class="${!MONTH&&(v==1&&innerWidth>=600?3:VIEW)==v?"on":""}" onclick="setView(${v})">${v}g</button>`).join("")}<button class="${MONTH?"on":""}" onclick="setMonth()">Mese</button></div><div id="tip" class="tip"></div>${MONTH?(MDAY?dayTideChart():monthChart()):chart(x)}${MONTH?"":`<button class="ab" style="top:${34+CH.bot-37}px;left:${8+CH.L}px" onclick="annota()" aria-label="Aggiungi cattura o nota" title="Aggiungi cattura o nota"><svg viewBox="0.1 0.1 19.9 18.8" width="16.8" height="16" aria-hidden="true"><path fill="var(--tx)" d="M3 17.25V21h3.75L17.8 9.94l-3.75-3.75L3 17.25zM20.7 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" transform="translate(2.5 1.5) scale(.82)"/><path d="M5 1.5v7M1.5 5h7" stroke="var(--tx)" stroke-width="2.4" stroke-linecap="round" fill="none"/></svg></button>`}</div><div id="frm"></div><div class="card">
   <b>${x.date.toLocaleDateString("it-IT",{weekday:"long",day:"numeric",month:"long"})}</b>
   <div class="big"><div class="${HOW=="a"?"on":""}" onclick="toggleHow('a')" style="background:${col(x.apnea)};color:${txc(x.apnea)}" title="${tA}"><span class="n">${x.apnea}</span> 🤿 Apnea</div><div class="${HOW=="f"?"on":""}" onclick="toggleHow('f')" style="background:${col(x.canna)};color:${txc(x.canna)}" title="${tF}"><span class="n">${x.canna}</span> 🎣 Canna</div><div class="${HOW=="c"?"on":""}" onclick="toggleHow('c')" style="background:${col(x.clarity)};color:${txc(x.clarity)}" title="${tC}"><span class="n">${x.clarity}</span> 💧 Acqua</div></div>${HOW?`<div class="howbox">${whyText(HOW=="f"?"f":HOW,x)}</div>`:""}
   <div class="wins" hidden><div><b>🤿 Momenti migliori Apnea</b><br>${wl(x.win.S)}</div><div><b>🎣 Momenti migliori Canna</b><br>${wl(x.win.F)}</div></div>
@@ -558,20 +558,23 @@ ${annH}</div>${how}`;
 }
 
 // ===== Vista mensile delle maree =====
-let MONTH=null,MC=null;
+let MONTH=null,MC=null,MDAY=null;
 const MESI=["gennaio","febbraio","marzo","aprile","maggio","giugno","luglio","agosto","settembre","ottobre","novembre","dicembre"],GG3=["dom","lun","mar","mer","gio","ven","sab"],GGL=["D","L","M","M","G","V","S"];
-function setMonth(){const n=new Date();MONTH={y:n.getFullYear(),m:n.getMonth()};if(S)detail(S.days[sel])}
+function setMonth(){MDAY=null;const n=new Date();MONTH={y:n.getFullYear(),m:n.getMonth()};if(S)detail(S.days[sel])}
 function monthNav(d){if(!MONTH)return;if(d===0){const n=new Date();MONTH={y:n.getFullYear(),m:n.getMonth()}}else{let k=MONTH.y*12+MONTH.m+d;k=Math.max(2026*12,Math.min(2027*12+11,k));MONTH={y:Math.floor(k/12),m:k%12}}detail(S.days[sel])}
+const wd0=(y,m,d)=>new Date(y,m,d).getDay()==0;
 function mcEvents(y,m,d){const k=y+"-"+p2(m+1)+"-"+p2(d);return TIDES.ext.filter(e=>e[0]==k)}
 function mcDayInfo(d){const {y,m}=MC,ev=mcEvents(y,m,d),dw=GG3[new Date(y,m,d).getDay()],f=c=>(c>0?"+":"")+c;
   const al=ev.filter(e=>e[3]=="H").map(e=>`<b>${e[1]}</b> ${f(e[2])}`).join(" · "),ba=ev.filter(e=>e[3]=="L").map(e=>`<b>${e[1]}</b> ${f(e[2])}`).join(" · ");
   return `<div style="font-weight:700;margin-bottom:2px">${dw} ${d} ${MESI[m]}</div><div>▲ Alte: ${al||"—"}</div><div>▼ Basse: ${ba||"—"}</div>`}
+function mcInfoFull(d){MC.cur=d;return mcDayInfo(d)}
+function mcOpenDay(d){if(!MC)return;MDAY={y:MC.y,m:MC.m,d:d||MC.cur||1};detail(S.days[sel])}
 function mcTap(ev){if(!MC)return;const p=ev.touches?ev.touches[0]:ev,svg=document.getElementById("mcsvg");if(!svg)return;
   const rc=svg.getBoundingClientRect(),xs=(p.clientX-rc.left)/rc.width*MC.W;let fr=(xs-MC.L)/(MC.R-MC.L);fr=Math.max(0,Math.min(.9999,fr));
   const k=fr*MC.N*48,d=1+Math.floor(k/48),i0=Math.floor(k),a=MC.pts[i0],b=MC.pts[Math.min(MC.pts.length-1,i0+1)],v=a==null?null:(b==null?a:a+(b-a)*(k-i0));
   const mins=Math.round((k%48)*30),hh=p2(Math.floor(mins/60))+":"+p2(mins%60),cur=document.getElementById("mccur"),x=MC.L+fr*(MC.R-MC.L);
   if(cur){cur.setAttribute("x1",x);cur.setAttribute("x2",x);cur.style.display=""}
-  const inf=document.getElementById("mcinfo");if(inf)inf.innerHTML=mcDayInfo(d)+`<div style="margin-top:3px;color:var(--mu)">alle ${hh}: <b style="color:var(--tx)">${v==null?"n/d":(v>0?"+":"")+Math.round(v)+" cm"}</b></div>`}
+  const inf=document.getElementById("mcinfo");if(inf)inf.innerHTML=mcInfoFull(d)+`<div style="margin-top:3px;color:var(--mu)">alle ${hh}: <b style="color:var(--tx)">${v==null?"n/d":(v>0?"+":"")+Math.round(v)+" cm"}</b></div><button class="mcgo" onclick="mcOpenDay(${d})">Grafico del giorno ▸</button>`}
 function monthChart(){
   const {y,m}=MONTH,N=new Date(y,m+1,0).getDate(),NAR=innerWidth<600,W=Math.max(300,Math.min(1400,innerWidth-(NAR?24:40))),H=NAR?300:360,L=36,R=W-8,T=30,B=H-26;
   const pts=[];for(let d=1;d<=N;d++){const c=TIDES.curve[y+"-"+p2(m+1)+"-"+p2(d)];for(let i=0;i<48;i++)pts.push(c?c[i]:null)}
@@ -590,16 +593,48 @@ function monthChart(){
   for(const e of evs){const d=+e[0].slice(8,10),[hh,mm]=e[1].split(":").map(Number),k=(d-1)*48+hh*2+mm/30+.5,xx=X(k);
     if(e[3]=="H"&&e[2]>=80)o+=`<text x="${xx}" y="${Y(e[2])-4}" font-size="9" fill="${e[2]>=110?"#f06a6a":"var(--tx)"}" text-anchor="middle" font-weight="600">${e[2]}</text>`;
     if(e[3]=="L"&&e[2]<=-40)o+=`<text x="${xx}" y="${Y(e[2])+11}" font-size="9" fill="var(--mu)" text-anchor="middle">${e[2]}</text>`}
-  for(let d=1;d<=N;d++){const x=L+(d-.5)*dw,wd=new Date(y,m,d).getDay(),show=dw>=13||d%2==1;
-    if(show)o+=`<text x="${x}" y="${B+12}" font-size="${NAR?9:10}" text-anchor="middle" fill="${wd==0||wd==6?"var(--ac)":"var(--mu)"}" font-weight="${wd==0?700:400}">${d}</text>`;
-    if(dw>=13)o+=`<text x="${x}" y="${B+23}" font-size="8" text-anchor="middle" fill="var(--mu)" opacity=".8">${GGL[wd]}</text>`}
+  for(let d=1;d<=N;d++)o+=`<rect x="${L+(d-1)*dw}" y="${B}" width="${dw}" height="26" fill="transparent" style="cursor:pointer" onclick="event.stopPropagation();mcOpenDay(${d})"/>`;
+  for(let d=1;d<=N;d++){const x=L+(d-.5)*dw,wd=new Date(y,m,d).getDay(),show=dw>=13||wd==0||(d%2==1&&!wd0(y,m,d-1)&&!wd0(y,m,d+1));
+    if(show)o+=`<text pointer-events="none" x="${x}" y="${B+12}" font-size="${NAR?9:10}" text-anchor="middle" fill="${wd==0?"#ff5a5a":"var(--mu)"}"${wd==0?' style="fill:#ff5a5a"':""} font-weight="${wd==0?700:400}">${d}</text>`;
+    if(dw>=13)o+=`<text pointer-events="none" x="${x}" y="${B+23}" font-size="8" text-anchor="middle" fill="var(--mu)"${wd==0?' style="fill:#ff5a5a"':""} opacity=".8">${GGL[wd]}</text>`}
   if(typeof SunCalc!=="undefined"){const ph=[];for(let d=1;d<=N;d++)ph.push(SunCalc.getMoonIllumination(new Date(y,m,d,12)).phase);
     [[0,"🌑"],[.25,"🌓"],[.5,"🌕"],[.75,"🌗"]].forEach(([t,ic])=>{let bd=1,bi=-1;ph.forEach((p,i)=>{const dd=Math.min(Math.abs(p-t),1-Math.abs(p-t));if(dd<bd){bd=dd;bi=i}});if(bd<.02)o+=`<text x="${L+(bi+.5)*dw}" y="${T-9}" font-size="${NAR?12:14}" text-anchor="middle">${ic}</text>`})}
   const now=new Date();let td=null;
   if(now.getFullYear()==y&&now.getMonth()==m){const k=(now.getDate()-1)*48+now.getHours()*2+now.getMinutes()/30,xx=X(k);td=now.getDate();o+=`<line x1="${xx}" x2="${xx}" y1="${T}" y2="${B}" stroke="#ff4d4d" stroke-width="1.4"/><text x="${xx}" y="${T-1}" font-size="9" fill="#ff6b6b" text-anchor="middle" font-weight="700">ora</text>`}
   o+=`<line id="mccur" x1="0" x2="0" y1="${T}" y2="${B}" stroke="#fff" stroke-width="1" opacity=".7" style="display:none"/></svg>`;
   const d0=td||1;
-  return `<div class="mn"><button onclick="monthNav(-1)" aria-label="Mese precedente"${y==2026&&m==0?" disabled":""}>‹</button><b>${MESI[m]} ${y}</b><button onclick="monthNav(1)" aria-label="Mese successivo"${y==2027&&m==11?" disabled":""}>›</button><button class="td" onclick="monthNav(0)">Oggi</button></div>${o}<div id="mcinfo" class="mci">${mcDayInfo(d0)}</div><div class="mcl">Altezza della marea in cm · tocca il grafico per orari e valori · <span style="color:#f0b429">+80</span> · <span style="color:#f06a6a">+110</span> · 🌑🌕 sizigie</div>`}
+  return `<div class="mn"><button onclick="monthNav(-1)" aria-label="Mese precedente"${y==2026&&m==0?" disabled":""}>‹</button><b>${MESI[m]} ${y}</b><button onclick="monthNav(1)" aria-label="Mese successivo"${y==2027&&m==11?" disabled":""}>›</button><button class="td" onclick="monthNav(0)">Oggi</button></div>${o}<div id="mcinfo" class="mci">${mcInfoFull(d0)}<button class="mcgo" onclick="mcOpenDay(${d0})">Grafico del giorno ▸</button></div><div class="mcl">Altezza della marea in cm · tocca il grafico per orari e valori, tocca il numero di un giorno per il suo grafico · <span style="color:#f0b429">+80</span> · <span style="color:#f06a6a">+110</span> · 🌑🌕 sizigie</div>`}
+
+function mdNav(dd){if(!MDAY)return;const t=new Date(MDAY.y,MDAY.m,MDAY.d+dd);if(t<new Date(2026,0,1)||t>new Date(2027,11,31))return;MDAY={y:t.getFullYear(),m:t.getMonth(),d:t.getDate()};MONTH={y:MDAY.y,m:MDAY.m};detail(S.days[sel])}
+function mdBack(){MDAY=null;detail(S.days[sel])}
+function mdOpenApp(){const t=new Date(MDAY.y,MDAY.m,MDAY.d),k=dkey(t),i=S.days.findIndex(x=>dkey(x.date)==k);if(i<0)return;sel=i;MONTH=null;MDAY=null;render()}
+function mdTap(ev){const D=window.MDC;if(!D)return;const p=ev.touches?ev.touches[0]:ev,svg=document.getElementById("mdsvg");if(!svg)return;
+  const rc=svg.getBoundingClientRect(),xs=(p.clientX-rc.left)/rc.width*D.W;let fr=Math.max(0,Math.min(.9999,(xs-D.L)/(D.R-D.L)));
+  const k=fr*48,i0=Math.floor(k),a=D.pts[i0],b=D.pts[Math.min(47,i0+1)],v=a==null?null:(b==null?a:a+(b-a)*(k-i0)),mins=Math.round(k*30),hh=p2(Math.floor(mins/60))+":"+p2(mins%60),x=D.L+fr*(D.R-D.L);
+  const cur=document.getElementById("mdcur");if(cur){cur.setAttribute("x1",x);cur.setAttribute("x2",x);cur.style.display=""}
+  const e=document.getElementById("mdval");if(e)e.innerHTML=`alle ${hh}: <b style="color:var(--tx)">${v==null?"n/d":(v>0?"+":"")+Math.round(v)+" cm"}</b>`}
+function dayTideChart(){
+  const {y,m,d}=MDAY,key=y+"-"+p2(m+1)+"-"+p2(d),pts=(TIDES.curve[key]||[]).slice(),NAR=innerWidth<600,W=Math.max(300,Math.min(1400,innerWidth-(NAR?24:40))),H=NAR?290:340,L=36,R=W-10,T=34,B=H-24,dt=new Date(y,m,d);
+  const wdn=["domenica","lunedì","martedì","mercoledì","giovedì","venerdì","sabato"][dt.getDay()],inApp=S.days.some(x=>dkey(x.date)==key);
+  const head=`<div class="mn"><button class="td" onclick="mdBack()">← Mese</button><button onclick="mdNav(-1)" aria-label="Giorno precedente">‹</button><b style="min-width:${NAR?130:190}px;text-transform:none">${wdn} ${d} ${MESI[m]}</b><button onclick="mdNav(1)" aria-label="Giorno successivo">›</button></div>`;
+  if(pts.length<48)return head+`<div style="padding:30px 10px;text-align:center;color:var(--mu)">Dati di marea non disponibili per questo giorno.</div>`;
+  const lo=Math.min(-40,Math.floor((Math.min(...pts)-10)/10)*10),hi=Math.max(100,Math.ceil((Math.max(...pts)+22)/10)*10),X=k=>L+k/48*(R-L),Y=v=>T+(hi-v)/(hi-lo)*(B-T);
+  window.MDC={W,L,R,pts};
+  let o=`<svg id="mdsvg" viewBox="0 0 ${W} ${H}" width="100%" style="display:block;touch-action:pan-y;cursor:crosshair" onclick="mdTap(event)" onmousemove="mdTap(event)" ontouchmove="mdTap(event)" ontouchstart="mdTap(event)" font-family="system-ui,sans-serif">`;
+  try{if(typeof SunCalc!=="undefined"&&typeof SP!=="undefined"){const P=SP.ve,tm=SunCalc.getTimes(new Date(y,m,d,12),P.lat,P.lon),hr=q=>q.getHours()+q.getMinutes()/60,sr=hr(tm.sunrise),ss=hr(tm.sunset);
+    if(isFinite(sr)&&isFinite(ss)){o+=`<rect x="${L}" y="${T}" width="${(sr/24)*(R-L)}" height="${B-T}" fill="#fff" opacity=".05"/><rect x="${L+(ss/24)*(R-L)}" y="${T}" width="${R-L-(ss/24)*(R-L)}" height="${B-T}" fill="#fff" opacity=".05"/>`;
+      o+=`<text x="${L+(sr/24)*(R-L)}" y="${T-6}" font-size="10" text-anchor="middle" fill="#f0b429">☀↑ ${p2(Math.floor(sr))}:${p2(Math.round((sr%1)*60)%60)}</text><text x="${L+(ss/24)*(R-L)}" y="${T-6}" font-size="10" text-anchor="middle" fill="#ff9b5a">☀↓ ${p2(Math.floor(ss))}:${p2(Math.round((ss%1)*60)%60)}</text>`}}}catch(e){}
+  for(let v=Math.ceil(lo/50)*50;v<=hi;v+=50){const yy=Y(v);o+=`<line x1="${L}" x2="${R}" y1="${yy}" y2="${yy}" stroke="var(--bd)" stroke-width="${v==0?1.2:.6}" ${v==0?'stroke-dasharray="4 3"':""}/><text x="${L-4}" y="${yy+3}" font-size="9.5" fill="var(--mu)" text-anchor="end">${v>0?"+":""}${v}</text>`}
+  if(hi>=110)o+=`<line x1="${L}" x2="${R}" y1="${Y(110)}" y2="${Y(110)}" stroke="#f06a6a" stroke-dasharray="5 3"/><text x="${R-2}" y="${Y(110)-3}" font-size="9" fill="#f06a6a" text-anchor="end">+110</text>`;
+  if(hi>=80)o+=`<line x1="${L}" x2="${R}" y1="${Y(80)}" y2="${Y(80)}" stroke="#f0b429" stroke-width=".9" stroke-dasharray="3 3" opacity=".8"/><text x="${R-2}" y="${Y(80)-3}" font-size="9" fill="#f0b429" text-anchor="end">+80</text>`;
+  for(let h=0;h<=24;h+=3){o+=`<line x1="${X(h*2)}" x2="${X(h*2)}" y1="${T}" y2="${B}" stroke="var(--bd)" stroke-width=".5" opacity=".6"/><text x="${X(h*2)}" y="${B+14}" font-size="10" fill="var(--mu)" text-anchor="middle">${p2(h)}</text>`}
+  o+=`<path d="${pts.map((v,k)=>(k?"L":"M")+X(k+.5).toFixed(1)+" "+Y(v).toFixed(1)).join("")}" fill="none" stroke="var(--ac)" stroke-width="2.2" stroke-linejoin="round"/>`;
+  for(const e of mcEvents(y,m,d)){const [hh,mm]=e[1].split(":").map(Number),k=hh*2+mm/30+.5,xx=X(k),yy=Y(e[2]),H_=e[3]=="H";
+    o+=`<circle cx="${xx}" cy="${yy}" r="3.2" fill="${H_?"var(--ac)":"var(--card)"}" stroke="var(--ac)" stroke-width="1.6"/><text x="${xx}" y="${yy+(H_?-15:19)}" font-size="11" font-weight="700" fill="${e[2]>=110?"#f06a6a":"var(--tx)"}" text-anchor="middle">${e[2]>0?"+":""}${e[2]}</text><text x="${xx}" y="${yy+(H_?-4:30)}" font-size="9.5" fill="var(--mu)" text-anchor="middle">${e[1]}</text>`}
+  const now=new Date();if(dkey(now)==key){const xx=X(now.getHours()*2+now.getMinutes()/30);o+=`<line x1="${xx}" x2="${xx}" y1="${T}" y2="${B}" stroke="#ff4d4d" stroke-width="1.4"/><text x="${xx}" y="${B+24}" font-size="9" fill="#ff6b6b" text-anchor="middle" font-weight="700">ora</text>`}
+  o+=`<line id="mdcur" x1="0" x2="0" y1="${T}" y2="${B}" stroke="#fff" opacity=".7" style="display:none"/></svg>`;
+  const ev=mcEvents(y,m,d),f=c=>(c>0?"+":"")+c,al=ev.filter(e=>e[3]=="H").map(e=>`<b>${e[1]}</b> ${f(e[2])}`).join(" · "),ba=ev.filter(e=>e[3]=="L").map(e=>`<b>${e[1]}</b> ${f(e[2])}`).join(" · ");
+  return head+o+`<div class="mci"><div>▲ Alte: ${al||"—"}</div><div>▼ Basse: ${ba||"—"}</div><div id="mdval" style="margin-top:3px;color:var(--mu)">tocca il grafico per il valore a una data ora</div>${inApp?`<button class="mcgo" onclick="mdOpenApp()">Apri il giorno nell’app (vento, pioggia, punteggi) ▸</button>`:""}</div><div class="mcl">Altezza della marea in cm · le fasce più chiare indicano la notte</div>`}
 function chart(x){
   const NAR=innerWidth<600,W=Math.max(300,Math.min(1400,innerWidth-(NAR?24:40))),Ht=NAR?Math.max(270,Math.min(340,Math.round(innerHeight*.4))):Math.max(280,Math.round(innerHeight*.42));
   const vv=(VIEW==1&&!NAR)?3:VIEW;let h0,h1;if(vv==1){h0=Math.max(0,x.a-6);h1=Math.min(S.n,x.a+30)}else{h0=x.a-(vv-1)*12;h1=h0+vv*24;if(h0<0){h1-=h0;h0=0}if(h1>S.n){h0-=h1-S.n;h1=S.n}h0=Math.max(0,h0)}
