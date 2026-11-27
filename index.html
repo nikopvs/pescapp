@@ -138,11 +138,15 @@ button.sec,label.btn.sec{background:transparent;color:var(--ac);border:1px solid
 .big div{flex:1 1 0;min-width:0;display:block;text-align:center;border-radius:8px;padding:4px 8px;font-size:10px;line-height:1.25}
 .big .n{display:block;font-size:12px;font-weight:700;line-height:1.25}
 .tiles+.big{margin-top:6px}
-/* telefono in orizzontale: solo il grafico a tutto schermo */
+/* telefono in orizzontale: il grafico a tutto schermo, il resto si trova scorrendo */
 @media (orientation:landscape) and (max-height:520px) and (pointer:coarse),(orientation:landscape) and (max-height:520px) and (hover:none){
- .bar,#st,.days,.guida,details.leg,#arch{display:none!important}
- #det>*:not(:first-child):not(#frm){display:none!important}
- body{padding:6px}#det .card:first-child{margin-top:0}
+ body{display:flex!important;flex-direction:column;height:auto!important;overflow:auto!important;padding:6px}
+ #det{display:contents}
+ #det>.card:first-child{order:0;margin-top:0;min-height:calc(100dvh - 12px)}
+ .bar,#st,.days{order:1}
+ #det>*,#arch,.guida,details.leg{order:2}
+ #det>.card:first-child{order:0}#det>#frm{order:1}
+ .vw select{display:none!important}.vw .vb{display:flex!important}
 }
 </style></head><body>
 <div class="bar"><h1>🎣 Pesca: Venezia</h1><div class="cams" id="cams"></div></div>
