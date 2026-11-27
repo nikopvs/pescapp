@@ -651,8 +651,10 @@ function chart(x){
   const moonDot=(x,y,ph)=>{const r=6,m=ph>.5?1-ph:ph,k=Math.cos(2*Math.PI*m);return `<g transform="translate(${x},${y}) scale(${ph>.5?-1:1},1)"><circle r="${r}" fill="#111" stroke="#8a8fa8"/><path d="M0,${-r}A${r},${r} 0 0 1 0,${r}A${(Math.abs(k)*r).toFixed(2)},${r} 0 0 ${k>0?0:1} 0,${-r}Z" fill="#fff"/></g>`};
   if(hasC){
     // (sfondo del cielo con colori e stelle rimosso)
-    // sotto l'orizzonte: fascia giorno più chiara (la notte resta scura)
-    for(let h=h0;h<h1;h+=.5)if(pos(SunCalc.getPosition,h)>=0)o+=`<rect x="${X(h)}" y="${hz}" width="${(R-L)/(h1-h0)/2+.5}" height="${bot-hz}" fill="#8fb4d0" opacity=".14"/>`;
+    // sotto l'orizzonte: fascia giorno più chiara, esattamente tra alba e tramonto (stessi orari dei pallini gialli)
+    S.days.forEach(dd=>{const al=dd.ev.find(e=>e.k=="alba"),tr=dd.ev.find(e=>e.k=="tramonto");if(!al||!tr)return;
+      const ha=Math.max(h0,(al.d-S.t0)/36e5),ht=Math.min(h1,(tr.d-S.t0)/36e5);if(!isFinite(ha)||!isFinite(ht)||ht<=ha)return;
+      o+=`<rect x="${X(ha).toFixed(1)}" y="${hz}" width="${(X(ht)-X(ha)).toFixed(1)}" height="${bot-hz}" fill="#8fb4d0" opacity=".14"/>`});
     {let d=`M${L},${hz}`;for(let q=L;q+12<=R;q+=12)d+=`q3,-3.5 6,0t6,0`;o+=`<path d="${d}" fill="none" stroke="var(--ac)" stroke-width="1" opacity=".9"/>`}
     const seg=(f,c,m)=>{let cur=[],r="";const fl=()=>{if(cur.length>1)r+=`<polyline fill="none" stroke="${c}" stroke-width="2" points="${cur.join(" ")}"/>`;cur=[]};
       for(let h=h0;h<=h1;h+=.5){const a=pos(f,h);if(a>0)cur.push(X(h).toFixed(1)+","+Ya(a,m).toFixed(1));else fl()}fl();return r};
