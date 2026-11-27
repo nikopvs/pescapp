@@ -656,9 +656,15 @@ function chart(x){
       const ha=Math.max(h0,(al.d-S.t0)/36e5),ht=Math.min(h1,(tr.d-S.t0)/36e5);if(!isFinite(ha)||!isFinite(ht)||ht<=ha)return;
       o+=`<rect x="${X(ha).toFixed(1)}" y="${hz}" width="${(X(ht)-X(ha)).toFixed(1)}" height="${bot-hz}" fill="#8fb4d0" opacity=".14"/>`});
     {let d=`M${L},${hz}`;for(let q=L;q+12<=R;q+=12)d+=`q3,-3.5 6,0t6,0`;o+=`<path d="${d}" fill="none" stroke="var(--ac)" stroke-width="1" opacity=".9"/>`}
-    const seg=(f,c,m)=>{let cur=[],r="";const fl=()=>{if(cur.length>1)r+=`<polyline fill="none" stroke="${c}" stroke-width="2" points="${cur.join(" ")}"/>`;cur=[]};
-      for(let h=h0;h<=h1;h+=.5){const a=pos(f,h);if(a>0)cur.push(X(h).toFixed(1)+","+Ya(a,m).toFixed(1));else fl()}fl();return r};
-    o+=seg(SunCalc.getPosition,"#ffd84a",0)+seg(SunCalc.getMoonPosition,"#d5dbee",1);
+    // archi del sole e della luna: dal pallino di alba/sorgere a quello di tramonto/calare (stessi orari dei pallini)
+    const seg=(f,c,m,kR,kS)=>{const E=[];S.days.forEach(dd=>dd.ev.forEach(e=>{if(e.k==kR||e.k==kS){const h=(e.d-S.t0)/36e5;if(isFinite(h))E.push({h,r:e.k==kR})}}));E.sort((p,q)=>p.h-q.h);
+      const iv=[];let st=null;if(E.length&&!E[0].r)st=h0-1;
+      for(const e of E){if(e.r)st=e.h;else if(st!=null){iv.push([st,e.h]);st=null}}if(st!=null)iv.push([st,h1+1]);
+      let r="";for(const [a0,b0] of iv){const A=Math.max(a0,h0),B=Math.min(b0,h1);if(B<=A)continue;const pts=[];
+        for(let h=A;h<B;h+=.25)pts.push(h);pts.push(B);
+        r+=`<polyline fill="none" stroke="${c}" stroke-width="2" points="${pts.map(h=>X(h).toFixed(1)+","+Ya(Math.max(0,pos(f,h)),m).toFixed(1)).join(" ")}"/>`}
+      return r};
+    o+=seg(SunCalc.getPosition,"#ffd84a",0,"alba","tramonto")+seg(SunCalc.getMoonPosition,"#d5dbee",1,"sorgere luna","calare luna");
   }
   // (nessuna evidenziazione del giorno selezionato nel grafico: resta solo quella nella riga dei giorni)
   for(let h=h0;h<h1;h++)if(S.t[h].getHours()==0)o+=`<line x1="${X(h)}" x2="${X(h)}" y1="${top-4}" y2="${bot}" stroke="var(--bd)"/><text x="${X(h)+3}" y="${Ht-4}">${S.t[h].toLocaleDateString("it-IT",{weekday:"short",day:"numeric"})}</text>`;
