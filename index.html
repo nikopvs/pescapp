@@ -142,10 +142,7 @@ button.sec,label.btn.sec{background:transparent;color:var(--ac);border:1px solid
 @media (orientation:landscape) and (max-height:520px) and (pointer:coarse),(orientation:landscape) and (max-height:520px) and (hover:none){
  body{display:flex!important;flex-direction:column;height:auto!important;overflow:auto!important;padding:6px}
  #det{display:contents}
- #det>.card:first-child{order:0;margin-top:0;min-height:calc(100dvh - 12px)}
- .bar,#st,.days{order:1}
- #det>*,#arch,.guida,details.leg{order:2}
- #det>.card:first-child{order:0}#det>#frm{order:1}
+ #det>.card:first-child{margin-top:0;min-height:calc(100dvh - 12px);scroll-margin-top:6px}
  .vw select{display:none!important}.vw .vb{display:flex!important}
 }
 </style></head><body>
@@ -194,6 +191,7 @@ function windCol(v){v=Math.max(0,v||0);let c=WCS[WCS.length-1][1];if(v<WCS[WCS.l
 const WGRAD="background:linear-gradient(90deg,rgb(20,225,160) 0%,rgb(20,225,160) 15%,rgb(255,235,0) 40%,rgb(255,30,40) 70%,rgb(214,40,214) 100%);-webkit-background-clip:text;background-clip:text;color:transparent;font-weight:700";
 // punteggio unico del giorno: il migliore tra apnea e canna, con l'icona della tecnica favorita (entrambe se quasi pari)
 const dayBest=x=>{const m=Math.max(x.apnea,x.canna),ic=Math.abs(x.apnea-x.canna)<=5?"🤿🎣":x.apnea>x.canna?"🤿":"🎣";return{v:m,ic}};
+function landTop(){if(!LAND())return;requestAnimationFrame(()=>{const c=document.querySelector("#det .card");if(c)window.scrollTo(0,Math.max(0,c.getBoundingClientRect().top+scrollY-6))})}
 const LAND=()=>TOUCH&&innerWidth>innerHeight&&innerHeight<520;
 const TOUCH=(()=>{try{return matchMedia('(hover: none)').matches||matchMedia('(pointer: coarse)').matches||matchMedia('(any-pointer: coarse)').matches||innerWidth<600||navigator.maxTouchPoints>0&&!matchMedia('(any-hover: hover)').matches}catch(e){return innerWidth<600}})();
 const qual=v=>v>=80?"ottime":v>=60?"buone":v>=40?"discrete":v>=20?"difficili":"pessime";
@@ -391,7 +389,7 @@ async function load(auto){
     mergeIcon(W,I);mergeMetar(W,R);
     const MM=pickMarine(M);S=compute(W,MM.h,k);S.sstNote=MM.note;refreshArchive();
     $("st").textContent="Aggiornato "+new Date().toLocaleString("it-IT",{dateStyle:"short",timeStyle:"short"})+(S.tide?"":" – livello marino non disponibile")+waterTxt();
-    sel=(auto&&prevT0===S.t0)?prevSel:PAST;render();hideSplash();
+    sel=(auto&&prevT0===S.t0)?prevSel:PAST;render();hideSplash();if(!auto)landTop();
   }catch(e){$("st").textContent=(auto&&S?"Aggiornamento non riuscito, riprovo tra poco · ":"")+"Errore: "+e.message+" (serve connessione; apri il file nel browser)."}
 }
 function waterTxt(){const i=Math.round((Date.now()-S.t0)/36e5),v=(S.sst&&S.sst[i]!=null)?S.sst[i]:(S.days[PAST]&&S.days[PAST].sst);
@@ -537,7 +535,7 @@ function render(){
     c.className="day"+(x.d<PAST?" past":"")+(x.d==PAST?" today":"")+(x.d==sel?" sel":"")+(x.date.getDay()==0?" sun":"");
     const db=dayBest(x),ds=db.v;
     c.innerHTML=`<b>${x.date.toLocaleDateString("it-IT",{weekday:"short"})}</b> ${x.date.getDate()}/${x.date.getMonth()+1}<div class="sc1" style="background:${col(ds)};color:${txc(ds)}" title="Il migliore tra Apnea (${x.apnea}) e Canna (${x.canna}); l’icona indica la tecnica favorita"><span>${ds}</span>${ds>90?`<small>${db.ic.length>2?"🤿<br>🎣":db.ic}</small>`:""}</div>`;
-    c.onclick=()=>{sel=x.d;MONTH=null;MDAY=null;render()};el.appendChild(c)});
+    c.onclick=()=>{sel=x.d;MONTH=null;MDAY=null;render();landTop()};el.appendChild(c)});
   el.children[sel].scrollIntoView({inline:"center",block:"nearest"});
   detail(S.days[sel]);
   const ic=S.days.filter(d=>d.src[0]=="I");
@@ -734,7 +732,7 @@ function chart(x){
 let _rw=innerWidth;window.addEventListener("resize",()=>{
   // La tastiera del telefono cambia solo l'altezza: ridisegnare chiuderebbe la tastiera. Si ridisegna solo se cambia la larghezza e non si sta scrivendo.
   const ae=document.activeElement,typing=ae&&/^(INPUT|TEXTAREA|SELECT)$/.test(ae.tagName);
-  if(innerWidth===_rw||typing)return;_rw=innerWidth;if(S)detail(S.days[sel])});
+  if(innerWidth===_rw||typing)return;_rw=innerWidth;if(S){detail(S.days[sel]);landTop()}});
 (function(){try{const sa=(window.matchMedia&&matchMedia("(display-mode: standalone)").matches)||navigator.standalone;if(!sa)return;
  const im=new Image();im.onload=function(){if(window.__spOff)return;const d=document.createElement("div");d.id="splash";d.style.cssText="position:fixed;inset:0;z-index:9999;background:#0a4f73 url(splash/s-1170x2532.jpg) center/cover no-repeat;transition:opacity .5s";document.body.appendChild(d);window.__sp=d;setTimeout(hideSplash,12000)};im.src="splash/s-1170x2532.jpg"}catch(e){}})();
 
