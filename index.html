@@ -118,6 +118,19 @@ button,label.btn{min-height:36px}
 .bar h1{flex:1 1 auto;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .bar .cams{flex:0 0 auto;margin:0}
 #st{display:block;text-align:center;margin:10px 0 12px;font-size:12px;color:var(--mu);white-space:normal;max-width:none;overflow:visible}
+
+/* uniform buttons: look of .guida */
+button,label.btn,select{background:transparent;color:var(--ac);border:1px solid var(--bd);border-radius:14px;padding:7px 14px;font-size:13px;cursor:pointer}
+button:disabled{opacity:.35;cursor:default}
+button.sec,label.btn.sec{background:transparent;color:var(--ac);border:1px solid var(--bd)}
+.mn button,.mn button.td{min-height:0;padding:3px 12px;font-size:16px;border-radius:14px;background:transparent;color:var(--ac);border:1px solid var(--bd)}
+.vw select,.vw .vb button{min-height:0;border-radius:14px;background:transparent;color:var(--ac);border:1px solid var(--bd)}
+.vw .vb button{padding:2px 10px;font-size:12px}.vw .vb button.on{background:rgba(11,122,158,.12);border-color:var(--ac);font-weight:700}
+.ab{border-radius:14px;background:transparent;color:var(--ac);border:1px solid var(--bd)}
+.mcgo{border-radius:14px;border:1px solid var(--bd)}
+#tut .tn button{background:transparent;color:var(--ac);border:1px solid var(--bd);border-radius:14px;font-size:15px;padding:11px 20px}
+.tipi button{background:transparent;color:var(--ac);border:1px solid var(--bd);border-radius:14px}
+.cams select,.bar select{border-radius:14px;color:var(--ac);background:transparent;border:1px solid var(--bd)}
 </style></head><body>
 <div class="bar"><h1>🎣 Pesca: Venezia</h1><div class="cams" id="cams"></div></div>
 <div id="st">Caricamento…</div>
@@ -550,7 +563,7 @@ function detail(x){
   · Apnea: vicino ai picchi di marea (acqua ferma, entro circa 45 minuti) e ad alba e tramonto (entro circa 60 minuti), solo con la luce; il massimo si ha quando coincidono.<br>
   · Canna: da subito dopo un picco di marea fino a 2 ore dopo, più alba e tramonto; bonus se in quel momento c’è anche il sorgere o il calare della luna.<br><br>
   I valori sono arrotondati, per questo i conti possono differire di un punto.</div></details>`;
-  $("det").innerHTML=`<div class="card"><div id="tip" class="tip"></div>${(()=>{const VWH=`<div class="vw"><select aria-label="Vista" onchange="vwSel(this.value)">${[1,3,5,7].filter(v=>v>1||innerWidth<600).map(v=>`<option value="${v}"${!MONTH&&(v==1&&innerWidth>=600?3:VIEW)==v?" selected":""}>${v}g</option>`).join("")}<option value="m"${MONTH?" selected":""}>M</option></select><span class="vb">${[1,3,5,7].filter(v=>v>1||innerWidth<600).map(v=>`<button class="${!MONTH&&(v==1&&innerWidth>=600?3:VIEW)==v?"on":""}" onclick="setView(${v})">${v}g</button>`).join("")}<button class="${MONTH?"on":""}" onclick="setMonth()">Mese</button></span></div>`;if(MONTH)return (MDAY?dayTideChart():monthChart()).replace("<!--VW-->",VWH);const CC=chart(x);return CC.replace("<!--VW-->",`<button class="ab" onclick="annota()" aria-label="Aggiungi cattura o nota" title="Aggiungi cattura o nota"><svg viewBox="0.1 0.1 19.9 18.8" width="16.8" height="16" aria-hidden="true"><path fill="var(--tx)" d="M3 17.25V21h3.75L17.8 9.94l-3.75-3.75L3 17.25zM20.7 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" transform="translate(2.5 1.5) scale(.82)"/><path d="M5 1.5v7M1.5 5h7" stroke="var(--tx)" stroke-width="2.4" stroke-linecap="round" fill="none"/></svg></button>`+VWH)})()}</div><div id="frm"></div><div class="card">
+  $("det").innerHTML=`<div class="card"><div id="tip" class="tip"></div>${(()=>{const VWH=`<div class="vw"><select aria-label="Vista" onchange="vwSel(this.value)">${[1,3,5,7].filter(v=>v>1||innerWidth<600).map(v=>`<option value="${v}"${!MONTH&&(v==1&&innerWidth>=600?3:VIEW)==v?" selected":""}>${v}g</option>`).join("")}${MONTH&&MDAY?`<option value="d" selected>G</option>`:""}<option value="m"${MONTH&&!MDAY?" selected":""}>M</option></select><span class="vb">${[1,3,5,7].filter(v=>v>1||innerWidth<600).map(v=>`<button class="${!MONTH&&(v==1&&innerWidth>=600?3:VIEW)==v?"on":""}" onclick="setView(${v})">${v}g</button>`).join("")}<button class="${MONTH?"on":""}" onclick="setMonth()">Mese</button></span></div>`;if(MONTH)return (MDAY?dayTideChart():monthChart()).replace("<!--VW-->",VWH);const CC=chart(x);return CC.replace("<!--VW-->",`<button class="ab" onclick="annota()" aria-label="Aggiungi cattura o nota" title="Aggiungi cattura o nota"><svg viewBox="0.1 0.1 19.9 18.8" width="16.8" height="16" aria-hidden="true"><path fill="var(--tx)" d="M3 17.25V21h3.75L17.8 9.94l-3.75-3.75L3 17.25zM20.7 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" transform="translate(2.5 1.5) scale(.82)"/><path d="M5 1.5v7M1.5 5h7" stroke="var(--tx)" stroke-width="2.4" stroke-linecap="round" fill="none"/></svg></button>`+VWH)})()}</div><div id="frm"></div><div class="card">
   <div class="big"><div class="${HOW=="a"?"on":""}" onclick="toggleHow('a')" style="background:${col(x.apnea)};color:${txc(x.apnea)}" title="${tA}"><span class="n">${x.apnea}</span> 🤿 Apnea</div><div class="${HOW=="f"?"on":""}" onclick="toggleHow('f')" style="background:${col(x.canna)};color:${txc(x.canna)}" title="${tF}"><span class="n">${x.canna}</span> 🎣 Canna</div><div class="${HOW=="c"?"on":""}" onclick="toggleHow('c')" style="background:${col(x.clarity)};color:${txc(x.clarity)}" title="${tC}"><span class="n">${x.clarity}</span> 💧 Acqua</div></div>${HOW?`<div class="howbox">${whyText(HOW=="f"?"f":HOW,x)}</div>`:""}
   <div class="wins" hidden><div><b>🤿 Momenti migliori Apnea</b><br>${wl(x.win.S)}</div><div><b>🎣 Momenti migliori Canna</b><br>${wl(x.win.F)}</div></div>
   <div class="tiles">${T((S.sstKind=="stima"?"T. acqua (stima)":"T. acqua (mare)")+` <a class="xl" href="https://seatemperature.info/it/venezia-temperatura-mare.html" target="_blank" rel="noopener noreferrer" title="Confronta con seatemperature.info">↗</a>`,x.sst==null?"n/d":x.sst.toFixed(1).replace(".",",")+" °C"+(x.sstTr!=null&&Math.abs(x.sstTr)>=.1?" "+(x.sstTr>0?"↗ +":"↘ ")+x.sstTr.toFixed(1).replace(".",","):""))}${T("Vento medio",x.avgW.toFixed(0)+" kn")}${T("Provenienza",dirN(x.dir))}${T("Pressione",`<span style="white-space:nowrap">${x.pm.toFixed(0)} hPa ${Math.abs(x.trend)<1?"→":x.trend>0?"↗":"↘"} ${x.trend>0?"+":""}${x.trend.toFixed(0)}</span>`)}${T("Spinta marea (stima)",(x.surge>0?"+":"")+x.surge+" cm")}${T("Raffica max",x.maxG.toFixed(0)+" kn")}${T("Pioggia giorno",x.rainDay.toFixed(1)+" mm")}${T("Pioggia 60h",x.rainPrev.toFixed(1)+" mm")}${T("Onda",x.wave==null?"n/d":x.wave.toFixed(1)+" m")}${T("Escursione marea",S.tide?x.range.toFixed(2)+" m":"n/d")}${c.rate!=null?T("Corrente marea",c.rate.toFixed(1)+" cm/h · "+(c.rate<3?"quasi ferma":c.rate<6?"debole":c.rate<=14?"buona":c.rate<24?"forte":"troppo forte")):""}${T("Luna",mp)}</div>
@@ -564,7 +577,7 @@ ${annH}</div>${how}`;
 // ===== Vista mensile delle maree =====
 let DAYH=0,MHM=-50,MHD=-63,MONTH=null,MC=null,MDAY=null;
 const MESI=["gennaio","febbraio","marzo","aprile","maggio","giugno","luglio","agosto","settembre","ottobre","novembre","dicembre"],GG3=["dom","lun","mar","mer","gio","ven","sab"],GGL=["D","L","M","M","G","V","S"];
-function setMonth(){MDAY=null;const n=new Date();MONTH={y:n.getFullYear(),m:n.getMonth()};if(S)detail(S.days[sel])}
+function setMonth(){MDAY=null;const n=new Date();MONTH=MONTH||{y:n.getFullYear(),m:n.getMonth()};if(S)detail(S.days[sel])}
 function monthNav(d){if(!MONTH)return;if(d===0){const n=new Date();MONTH={y:n.getFullYear(),m:n.getMonth()}}else{let k=MONTH.y*12+MONTH.m+d;k=Math.max(2026*12,Math.min(2027*12+11,k));MONTH={y:Math.floor(k/12),m:k%12}}detail(S.days[sel])}
 const wd0=(y,m,d)=>new Date(y,m,d).getDay()==0;
 function mcEvents(y,m,d){const k=y+"-"+p2(m+1)+"-"+p2(d);return TIDES.ext.filter(e=>e[0]==k)}
@@ -607,7 +620,7 @@ function monthChart(){
   if(now.getFullYear()==y&&now.getMonth()==m){const k=(now.getDate()-1)*48+now.getHours()*2+now.getMinutes()/30,xx=X(k);td=now.getDate();o+=`<line x1="${xx}" x2="${xx}" y1="${T}" y2="${B}" stroke="#ff4d4d" stroke-width="1.4"/><text x="${xx}" y="${T-1}" font-size="9" fill="#ff6b6b" text-anchor="middle" font-weight="700">ora</text>`}
   o+=`<line id="mccur" x1="0" x2="0" y1="${T}" y2="${B}" stroke="var(--tx)" stroke-width="1" opacity=".7" style="display:none"/></svg>`;
   const d0=td||1;
-  return `<div class="mn"><button onclick="monthNav(-1)" aria-label="Mese precedente"${y==2026&&m==0?" disabled":""}>‹</button><b>${MESI[m]} ${y}</b><button onclick="monthNav(1)" aria-label="Mese successivo"${y==2027&&m==11?" disabled":""}>›</button><button class="td" onclick="monthNav(0)">Oggi</button></div>${o}<div class="mg"><div id="mcinfo" class="mci">${mcInfoFull(d0)}</div><div class="mcl">Altezza della marea in cm · tocca il grafico per orari e valori, tocca il numero di un giorno per il suo grafico · <span style="color:#f0b429">+80</span> · <span style="color:#f06a6a">+110</span> · 🌑🌕 sizigie</div><!--VW--></div>`}
+  return `<div class="mn"><button onclick="monthNav(-1)" aria-label="Mese precedente"${y==2026&&m==0?" disabled":""}>‹</button><b>${MESI[m]} ${y}</b><button onclick="monthNav(1)" aria-label="Mese successivo"${y==2027&&m==11?" disabled":""}>›</button></div>${o}<div class="mg"><div id="mcinfo" class="mci">${mcInfoFull(d0)}</div><div class="mcl">Altezza della marea in cm · tocca il grafico per orari e valori, tocca il numero di un giorno per il suo grafico · <span style="color:#f0b429">+80</span> · <span style="color:#f06a6a">+110</span> · 🌑🌕 sizigie</div><!--VW--></div>`}
 
 function mdNav(dd){if(!MDAY)return;const t=new Date(MDAY.y,MDAY.m,MDAY.d+dd);if(t<new Date(2026,0,1)||t>new Date(2027,11,31))return;MDAY={y:t.getFullYear(),m:t.getMonth(),d:t.getDate()};MONTH={y:MDAY.y,m:MDAY.m};detail(S.days[sel])}
 function mdBack(){MDAY=null;detail(S.days[sel])}
@@ -620,7 +633,7 @@ function mdTap(ev){const D=window.MDC;if(!D)return;const p=ev.touches?ev.touches
 function dayTideChart(){
   const {y,m,d}=MDAY,key=y+"-"+p2(m+1)+"-"+p2(d),pts=(TIDES.curve[key]||[]).slice(),NAR=innerWidth<600,W=Math.max(300,Math.min(1400,innerWidth-(NAR?24:40))),H=NAR?290:340,L=36,R=W-10,T=34,B=H-24,dt=new Date(y,m,d);
   const wdn=["domenica","lunedì","martedì","mercoledì","giovedì","venerdì","sabato"][dt.getDay()],inApp=S.days.some(x=>dkey(x.date)==key);
-  const head=`<div class="mn"><button class="td" onclick="mdBack()">← Mese</button><button onclick="mdNav(-1)" aria-label="Giorno precedente">‹</button><b style="min-width:${NAR?130:190}px;text-transform:none">${wdn} ${d} ${MESI[m]}</b><button onclick="mdNav(1)" aria-label="Giorno successivo">›</button></div>`;
+  const head=`<div class="mn"><button onclick="mdNav(-1)" aria-label="Giorno precedente">‹</button><b style="min-width:${NAR?130:190}px;text-transform:none">${wdn} ${d} ${MESI[m]}</b><button onclick="mdNav(1)" aria-label="Giorno successivo">›</button></div>`;
   if(pts.length<48)return head+`<div style="padding:30px 10px;text-align:center;color:var(--mu)">Dati di marea non disponibili per questo giorno.</div>`;
   const lo=Math.min(-40,Math.floor((Math.min(...pts)-10)/10)*10),hi=Math.max(100,Math.ceil((Math.max(...pts)+22)/10)*10),X=k=>L+k/48*(R-L),Y=v=>T+(hi-v)/(hi-lo)*(B-T);
   window.MDC={W,L,R,pts};
@@ -639,7 +652,7 @@ function dayTideChart(){
   o+=`<line id="mdcur" x1="0" x2="0" y1="${T}" y2="${B}" stroke="var(--tx)" opacity=".7" style="display:none"/></svg>`;
   const ev=mcEvents(y,m,d),f=c=>(c>0?"+":"")+c,al=ev.filter(e=>e[3]=="H").map(e=>`<b>${e[1]}</b> ${f(e[2])}`).join(" · "),ba=ev.filter(e=>e[3]=="L").map(e=>`<b>${e[1]}</b> ${f(e[2])}`).join(" · ");
   return head+o+`<div class="lgr"><!--VW--></div><div class="mci"><div>▲ Alte: ${al||"—"}</div><div>▼ Basse: ${ba||"—"}</div><div id="mdval" style="margin-top:3px;color:var(--mu)">tocca il grafico per il valore a una data ora</div>${inApp?`<button class="mcgo" onclick="mdOpenApp()">Apri il giorno nell’app (vento, pioggia, punteggi) ▸</button>`:""}</div><div class="mcl">Altezza della marea in cm · le fasce più chiare indicano la notte</div>`}
-function vwSel(v){if(v=="m")setMonth();else setView(+v)}
+function vwSel(v){if(v=="m")setMonth();else if(v!="d")setView(+v)}
 function chart(x){
   const NAR=innerWidth<600,W=Math.max(300,Math.min(1400,innerWidth-(NAR?24:40))),Ht=NAR?Math.max(250,Math.min(334,Math.round(innerHeight*.4)-6)):Math.max(280,Math.round(innerHeight*.42));
   const vv=(VIEW==1&&!NAR)?3:VIEW;let h0,h1;if(vv==1){h0=Math.max(0,x.a-6);h1=Math.min(S.n,x.a+30)}else{h0=x.a-(vv-1)*12;h1=h0+vv*24;if(h0<0){h1-=h0;h0=0}if(h1>S.n){h0-=h1-S.n;h1=S.n}h0=Math.max(0,h0)}
