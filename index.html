@@ -569,13 +569,13 @@ function detail(x){
   <div class="tiles">${T((S.sstKind=="stima"?"T. acqua (stima)":"T. acqua (mare)")+` <a class="xl" href="https://seatemperature.info/it/venezia-temperatura-mare.html" target="_blank" rel="noopener noreferrer" title="Confronta con seatemperature.info">↗</a>`,x.sst==null?"n/d":x.sst.toFixed(1).replace(".",",")+" °C"+(x.sstTr!=null&&Math.abs(x.sstTr)>=.1?" "+(x.sstTr>0?"↗ +":"↘ ")+x.sstTr.toFixed(1).replace(".",","):""))}${T("Vento medio",x.avgW.toFixed(0)+" kn")}${T("Provenienza",dirN(x.dir))}${T("Pressione",`<span style="white-space:nowrap">${x.pm.toFixed(0)} hPa ${Math.abs(x.trend)<1?"→":x.trend>0?"↗":"↘"} ${x.trend>0?"+":""}${x.trend.toFixed(0)}</span>`)}${T("Spinta marea (stima)",(x.surge>0?"+":"")+x.surge+" cm")}${T("Raffica max",x.maxG.toFixed(0)+" kn")}${T("Pioggia giorno",x.rainDay.toFixed(1)+" mm")}${T("Pioggia 60h",x.rainPrev.toFixed(1)+" mm")}${T("Onda",x.wave==null?"n/d":x.wave.toFixed(1)+" m")}${T("Escursione marea",S.tide?x.range.toFixed(2)+" m":"n/d")}${c.rate!=null?T("Corrente marea",c.rate.toFixed(1)+" cm/h · "+(c.rate<3?"quasi ferma":c.rate<6?"debole":c.rate<=14?"buona":c.rate<24?"forte":"troppo forte")):""}${T("Luna",mp)}</div>
 ${annH}</div>${how}`;
   renderForm();renderArchive();
-  {const cd=document.querySelector("#det .card");if(cd&&innerWidth<600){if(!MONTH&&!MDAY)DAYH=cd.offsetHeight;else if(MONTH&&!MDAY&&DAYH&&(window._fit||0)<3){const dl=DAYH-cd.offsetHeight;if(Math.abs(dl)>1){window._fit=(window._fit||0)+1;MHM+=dl;detail(S.days[sel]);return}}window._fit=0}}
+  {const cd=document.querySelector("#det .card");if(cd){if(!MONTH)DAYH=cd.offsetHeight;else if(DAYH&&(window._fit||0)<3){const dl=DAYH-cd.offsetHeight;if(Math.abs(dl)>1){window._fit=(window._fit||0)+1;if(MDAY)MHT+=dl;else if(innerWidth<600)MHM+=dl;else MHD+=dl;detail(S.days[sel]);return}}window._fit=0}}
   const sv=document.querySelector&&document.querySelector("#det svg");
   if(sv&&!MONTH){const tip=document.getElementById("tip");sv.onmousemove=ev=>{if(CH&&tip)hoverAt(ev,sv,tip)};sv.onmouseleave=()=>{if(tip)hoverOff(sv,tip)};sv.style.cursor="crosshair";sv.onclick=ev=>{if(!CH)return;if(TOUCH||ev.pointerType==='touch'||ev.pointerType==='pen'){hoverAt(ev,sv,tip);return}const r=sv.getBoundingClientRect(),px=(ev.clientX-r.left)*CH.W/r.width;if(px<CH.L||px>CH.R)return;openForm(CH.h0+(px-CH.L)/(CH.R-CH.L)*(CH.h1-CH.h0))}}
 }
 
 // ===== Vista mensile delle maree =====
-let DAYH=0,MHM=-50,MHD=-63,MONTH=null,MC=null,MDAY=null;
+let MHT=0,DAYH=0,MHM=-50,MHD=-63,MONTH=null,MC=null,MDAY=null;
 const MESI=["gennaio","febbraio","marzo","aprile","maggio","giugno","luglio","agosto","settembre","ottobre","novembre","dicembre"],GG3=["dom","lun","mar","mer","gio","ven","sab"],GGL=["D","L","M","M","G","V","S"];
 function setMonth(){MDAY=null;const n=new Date();MONTH=MONTH||{y:n.getFullYear(),m:n.getMonth()};if(S)detail(S.days[sel])}
 function monthNav(d){if(!MONTH)return;if(d===0){const n=new Date();MONTH={y:n.getFullYear(),m:n.getMonth()}}else{let k=MONTH.y*12+MONTH.m+d;k=Math.max(2026*12,Math.min(2027*12+11,k));MONTH={y:Math.floor(k/12),m:k%12}}detail(S.days[sel])}
@@ -631,7 +631,7 @@ function mdTap(ev){const D=window.MDC;if(!D)return;const p=ev.touches?ev.touches
   const cur=document.getElementById("mdcur");if(cur){cur.setAttribute("x1",x);cur.setAttribute("x2",x);cur.style.display=""}
   const e=document.getElementById("mdval");if(e)e.innerHTML=`alle ${hh}: <b style="color:var(--tx)">${v==null?"n/d":(v>0?"+":"")+Math.round(v)+" cm"}</b>`}
 function dayTideChart(){
-  const {y,m,d}=MDAY,key=y+"-"+p2(m+1)+"-"+p2(d),pts=(TIDES.curve[key]||[]).slice(),NAR=innerWidth<600,W=Math.max(300,Math.min(1400,innerWidth-(NAR?24:40))),H=NAR?290:340,L=36,R=W-10,T=34,B=H-24,dt=new Date(y,m,d);
+  const {y,m,d}=MDAY,key=y+"-"+p2(m+1)+"-"+p2(d),pts=(TIDES.curve[key]||[]).slice(),NAR=innerWidth<600,W=Math.max(300,Math.min(1400,innerWidth-(NAR?24:40))),H=(NAR?290:340)+MHT,L=36,R=W-10,T=34,B=H-24,dt=new Date(y,m,d);
   const wdn=["domenica","lunedì","martedì","mercoledì","giovedì","venerdì","sabato"][dt.getDay()],inApp=S.days.some(x=>dkey(x.date)==key);
   const head=`<div class="mn"><button onclick="mdNav(-1)" aria-label="Giorno precedente">‹</button><b style="min-width:${NAR?130:190}px;text-transform:none">${wdn} ${d} ${MESI[m]}</b><button onclick="mdNav(1)" aria-label="Giorno successivo">›</button></div>`;
   if(pts.length<48)return head+`<div style="padding:30px 10px;text-align:center;color:var(--mu)">Dati di marea non disponibili per questo giorno.</div>`;
