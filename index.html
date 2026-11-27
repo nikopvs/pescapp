@@ -36,6 +36,7 @@ a{padding:7px 10px;border-radius:8px;border:1px solid var(--bd);background:var(-
 select,button{font:inherit;padding:7px 10px;border-radius:8px;border:1px solid var(--bd);background:var(--card);color:var(--tx)}
 button{cursor:pointer;background:var(--ac);color:#fff;border:0}
 .days{display:flex;gap:6px;overflow-x:auto;padding-bottom:8px}
+.day.sun,.day.sun b{color:var(--r)!important}
 .day{flex:0 0 74px;background:var(--card);border:2px solid var(--bd);border-radius:10px;padding:6px;text-align:center;cursor:pointer;font-size:12px}
 .day.past{opacity:.6}.day.sel{border-color:var(--ac)}.day b{font-weight:500}.day.today b{color:var(--ac);font-weight:900}
 .sc1{margin-top:4px;font-weight:800;font-size:20px;line-height:1;padding:6px 0;border-radius:8px;display:flex;align-items:center;justify-content:center;gap:3px}.sc1 small{font-size:11px;font-weight:400;line-height:1.05}
@@ -499,7 +500,7 @@ function render(){
   const el=$("days");el.innerHTML="";
   S.days.forEach(x=>{
     const c=document.createElement("div");
-    c.className="day"+(x.d<PAST?" past":"")+(x.d==PAST?" today":"")+(x.d==sel?" sel":"");
+    c.className="day"+(x.d<PAST?" past":"")+(x.d==PAST?" today":"")+(x.d==sel?" sel":"")+(x.date.getDay()==0?" sun":"");
     const db=dayBest(x),ds=db.v;
     c.innerHTML=`<b>${x.date.toLocaleDateString("it-IT",{weekday:"short"})}</b> ${x.date.getDate()}/${x.date.getMonth()+1}<div class="sc1" style="background:${col(ds)};color:${txc(ds)}" title="Il migliore tra Apnea (${x.apnea}) e Canna (${x.canna}); l’icona indica la tecnica favorita"><span>${ds}</span>${ds>90?`<small>${db.ic.length>2?"🤿<br>🎣":db.ic}</small>`:""}</div>`;
     c.onclick=()=>{sel=x.d;MONTH=null;MDAY=null;render()};el.appendChild(c)});
@@ -649,15 +650,9 @@ function chart(x){
   Object.assign(CH,{X,Ya,top,bot,cT,cB,hz,Ht});CH.alt=hasC?((m,hh)=>pos(m?SunCalc.getMoonPosition:SunCalc.getPosition,hh)):null;let Ysf=null;
   const moonDot=(x,y,ph)=>{const r=6,m=ph>.5?1-ph:ph,k=Math.cos(2*Math.PI*m);return `<g transform="translate(${x},${y}) scale(${ph>.5?-1:1},1)"><circle r="${r}" fill="#111" stroke="#8a8fa8"/><path d="M0,${-r}A${r},${r} 0 0 1 0,${r}A${(Math.abs(k)*r).toFixed(2)},${r} 0 0 ${k>0?0:1} 0,${-r}Z" fill="#fff"/></g>`};
   if(hasC){
-    // cielo: colori in base all'altezza del sole
-    const KF=[[-14,[6,10,26]],[-8,[16,22,58]],[-3,[92,52,96]],[0,[222,94,52]],[3,[246,150,70]],[8,[250,196,120]],[16,[120,190,236]],[35,[74,164,232]]];
-    const skyC=a=>{if(a<=KF[0][0])return KF[0][1];for(let i=1;i<KF.length;i++)if(a<=KF[i][0]){const [a0,c0]=KF[i-1],[a1,c1]=KF[i],t=(a-a0)/(a1-a0);return c0.map((v,k)=>Math.round(v+(c1[k]-v)*t))}return KF[KF.length-1][1]};
-    let st="";for(let h=h0;h<=h1+1e-6;h+=.25){const c=skyC(pos(SunCalc.getPosition,h));st+=`<stop offset="${((h-h0)/(h1-h0)).toFixed(4)}" stop-color="rgb(${c})"/>`}
-    o+=`<defs><linearGradient id="skyg" gradientUnits="userSpaceOnUse" x1="${L}" x2="${R}" y1="0" y2="0">${st}</linearGradient></defs><rect x="${L}" y="${cT}" width="${R-L}" height="${hz-cT}" fill="url(#skyg)"/>`;
-    for(let k=0;k*.2+h0<h1;k++){const h=h0+k*.2,al=pos(SunCalc.getPosition,h);if(al>-6)continue;const r1=Math.abs(Math.sin(k*12.9898)*43758.5453)%1,r2=Math.abs(Math.sin(k*78.233)*12345.6789)%1;if(r1>.6)continue;
-      o+=`<circle cx="${X(h).toFixed(1)}" cy="${(cT+4+r2*(hz-cT-16)).toFixed(1)}" r="${(.6+r1*.9).toFixed(1)}" fill="#fff" opacity="${(Math.min(1,(-al-6)/6)*.9).toFixed(2)}"/>`}
-    // sotto l'orizzonte: fascia notte
-    for(let h=h0;h<h1;h+=.5)if(pos(SunCalc.getPosition,h)<0)o+=`<rect x="${X(h)}" y="${hz}" width="${(R-L)/(h1-h0)/2+.5}" height="${bot-hz}" fill="#5b6b8c" opacity=".16"/>`;
+    // (sfondo del cielo con colori e stelle rimosso)
+    // sotto l'orizzonte: fascia giorno più chiara (la notte resta scura)
+    for(let h=h0;h<h1;h+=.5)if(pos(SunCalc.getPosition,h)>=0)o+=`<rect x="${X(h)}" y="${hz}" width="${(R-L)/(h1-h0)/2+.5}" height="${bot-hz}" fill="#8fb4d0" opacity=".14"/>`;
     {let d=`M${L},${hz}`;for(let q=L;q+12<=R;q+=12)d+=`q3,-3.5 6,0t6,0`;o+=`<path d="${d}" fill="none" stroke="var(--ac)" stroke-width="1" opacity=".9"/>`}
     const seg=(f,c,m)=>{let cur=[],r="";const fl=()=>{if(cur.length>1)r+=`<polyline fill="none" stroke="${c}" stroke-width="2" points="${cur.join(" ")}"/>`;cur=[]};
       for(let h=h0;h<=h1;h+=.5){const a=pos(f,h);if(a>0)cur.push(X(h).toFixed(1)+","+Ya(a,m).toFixed(1));else fl()}fl();return r};
