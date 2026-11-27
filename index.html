@@ -651,7 +651,7 @@ function dayTideChart(){
   const now=new Date();if(dkey(now)==key){const xx=X(now.getHours()*2+now.getMinutes()/30);o+=`<line x1="${xx}" x2="${xx}" y1="${T}" y2="${B}" stroke="#ff4d4d" stroke-width="1.4"/><text x="${xx}" y="${B+24}" font-size="9" fill="#ff6b6b" text-anchor="middle" font-weight="700">ora</text>`}
   o+=`<line id="mdcur" x1="0" x2="0" y1="${T}" y2="${B}" stroke="var(--tx)" opacity=".7" style="display:none"/></svg>`;
   const ev=mcEvents(y,m,d),f=c=>(c>0?"+":"")+c,al=ev.filter(e=>e[3]=="H").map(e=>`<b>${e[1]}</b> ${f(e[2])}`).join(" · "),ba=ev.filter(e=>e[3]=="L").map(e=>`<b>${e[1]}</b> ${f(e[2])}`).join(" · ");
-  return head+o+`<div class="mg"><div class="mci"><div>▲ Alte: ${al||"—"}</div><div>▼ Basse: ${ba||"—"}</div><div id="mdval" style="margin-top:3px;color:var(--mu)">tocca il grafico per il valore a una data ora</div>${inApp?`<button class="mcgo" onclick="mdOpenApp()">Apri il giorno nell’app (vento, pioggia, punteggi) ▸</button>`:""}</div><div class="mcl">Altezza della marea in cm · le fasce più chiare indicano la notte</div><!--VW--></div>`}
+  return head+o+`<div class="mg"><div class="mci"><div>▲ Alte: ${al||"—"}</div><div>▼ Basse: ${ba||"—"}</div><div id="mdval" style="margin-top:3px;color:var(--mu)">tocca il grafico per il valore a una data ora</div></div><div class="mcl">Altezza della marea in cm · le fasce più chiare indicano la notte</div><!--VW--></div>`}
 function vwSel(v){if(v=="m")setMonth();else if(v!="d")setView(+v)}
 function chart(x){
   const NAR=innerWidth<600,W=Math.max(300,Math.min(1400,innerWidth-(NAR?24:40))),Ht=NAR?Math.max(250,Math.min(334,Math.round(innerHeight*.4)-6)):Math.max(280,Math.round(innerHeight*.42));
